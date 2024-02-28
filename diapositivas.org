@@ -1,0 +1,154 @@
+#+TITLE: Computación paralela y cálculo distribuido
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Introducción
+
+** Contenidos de la asignatura
+
+- Introducción
+  - Computación paralela y concurrente, sistemas multinúcleo y sistemas distribuidos
+  - Rendimiento, escalabilidad y eficiencia
+  - Lenguajes
+- Estrategias de paralelismo en sistemas multinúcleo
+  - Descripción de los sistemas multinúcleo
+  - Estrategias, herramientas y modelos de programación paralela
+  - Desarrollo de aplicaciones capaces de realizar ejecuciones eficientes en sistemas multinúcleo
+- Estrategias de paralelismo en sistemas distribuidos
+  - Descripción de los sistemas distribuidos
+  - Estrategias, herramientas y modelos para la computación distribuida
+  - Desarrollo de aplicaciones capaces de realizar ejecuciones eficientes en sistemas distribuidos
+
+** Evaluación
+
+*** Primera convocatoria
+
+**** Porcentajes
+- Prácticas (40%)
+  - Dos prácticas, 20% cada una
+- Proyecto final (60%)
+
+**** Notas mínimas
+- Nota mínima para superar la asignatura: 5/10
+  - Nota mínima en cada práctica: 4/10
+  - Nota mínima en el proyecto: 5/10
+
+** Evaluación II
+*** Segunda convocatoria
+
+- Un examen sustituye el proyecto final
+- Se mantiene la nota de prácticas (no se puede recuperar)
+- Nota mínima para superar la asignatura: 5/10
+
+** Motivación
+
+¿Por qué es importante la computación paralela y el cálculo distribuido?
+
+** Motivación II
+
+- El microprocesador es el cerebro del ordenador. Ejecuta operaciones aritméticas y de control.
+- Ley de Moore
+  #+begin_quote
+  Aproximadamente cada 2 años se duplica el número de transistores en un microprocesador
+  #+end_quote
+
+- Desde su creación, la tecnología electrónica sigue avanzando.
+  - Se incrementa la capacidad y el rendimiento.
+
+  - Se reduce el coste.
+
+- Una forma de medir el rendimiento es lo que se tarda en ejecutar una tarea.
+
+** Motivación III
+
+[[./VUP.png]]
+
+** Motivación IV
+
+¿Por qué cada vez los procesadores cada vez mejoran *menos*?
+
+- Los procesadores ejecutan sus tareas siguiendo unos ciclos de reloj.
+- Aumentar la frecuencia de los ciclos mejora el rendimiento.
+- Aumentar más la frecuencia es *imposible*.
+
+** Muro de Potencia
+
+[[./MuroPotencia.png]]
+
+** Muro de Potencia II
+
+- Aumentar la frecuencia aumenta la potencia necesaria.
+- Aumentar la potencia aumenta la temperatura, que hay que disipar.
+- Se puede reducir el consumo de potencia con más miniaturización (cada vez más complejo, límites físicos) o reduciendo voltaje.
+- Voltajes muy bajos generan pérdidas por corrientes de fuga más elevadas.
+
+A este problema se le denomina *muro de potencia*.
+
+** Soluciones
+
+¿Qué soluciones se pueden plantear?
+
+- Pipelining de instrucciones
+- Vectorización de instrucciones
+- Optimizar tiempos de espera de I/O
+- Hardware específico para determinadas tareas (GPU, criptografía, ...)
+- Computación cuántica
+- _Procesadores multinúcleo_
+- _Cálculo distribuido_
+
+Nos centraremos en las dos últimas
+
+** ¿El santo grial?
+
+¿Es el procesamiento paralelo el santo grial?
+
+#+begin_quote
+Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve mujeres embarazadas, ¿darán luz a un bebé tras un mes?
+#+end_quote
+
+- No todos los problemas son paralelizables. ¿Cuáles son los impedimentos?
+- Algunos problemas pueden tener un algoritmo paralelo aunque inferior sobre un mononúcleo.
+
+** Julia
+
+#+ATTR_LATEX: :width 0.4\textwidth
+[[./julia.png]]
+
+- Lenguaje de alto rendimiento para aplicaciones científicas.
+- Sintaxis y semántica similar a Python.
+- Pero con rendimiento más cercano a C o FORTRAN.
+- Relativamente reciente
+
+** Descargar Julia
+
+https://julialang.org/
+
+** Conociendo el ordenador
+
+#+ATTR_LATEX: :width 0.4\textwidth
+[[./CPUX.png]]
+
+- CPU-Z en Windows
+- CPU-X en Linux (/proc/cpuinfo, lscpu, dmidecode, ...)
+
+# TODO
+# CPU-Z
+# MareNostrum
+# TOP500
+# Linpack / GeekBench
