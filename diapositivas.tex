@@ -1,4 +1,4 @@
-% Created 2024-02-28 mié 23:39
+% Created 2024-02-29 jue 20:33
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -29,9 +29,9 @@
 \maketitle
 
 \section{Introducción}
-\label{sec:org137aa4e}
+\label{sec:org2accc92}
 
-\begin{frame}[label={sec:org0c2adfe}]{Contenidos de la asignatura}
+\begin{frame}[label={sec:org95020f0}]{Contenidos de la asignatura}
 \begin{itemize}
 \item Introducción
 \begin{itemize}
@@ -54,7 +54,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3f61dab}]{Evaluación}
+\begin{frame}[label={sec:org19c95dc}]{Evaluación}
 \begin{block}{Primera convocatoria}
 \begin{block}{Porcentajes}
 \begin{itemize}
@@ -78,7 +78,7 @@
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org962ce32}]{Evaluación II}
+\begin{frame}[label={sec:org0402459}]{Evaluación II}
 \begin{block}{Segunda convocatoria}
 \begin{itemize}
 \item Un examen sustituye el proyecto final
@@ -88,11 +88,11 @@
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org2674c00}]{Motivación}
+\begin{frame}[label={sec:org5c1ab3d}]{Motivación}
 ¿Por qué es importante la computación paralela y el cálculo distribuido?
 \end{frame}
 
-\begin{frame}[label={sec:org869ca0e}]{Motivación II}
+\begin{frame}[label={sec:orgb34ab17}]{Motivación II}
 \begin{itemize}
 \item El microprocesador es el cerebro del ordenador. Ejecuta operaciones aritméticas y de control.
 \item Ley de Moore
@@ -111,13 +111,13 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org9e22a78}]{Motivación III}
+\begin{frame}[label={sec:orgad45025}]{Motivación III}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./VUP.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org22e6585}]{Motivación IV}
+\begin{frame}[label={sec:org20a0864}]{Motivación IV}
 ¿Por qué cada vez los procesadores cada vez mejoran \alert{menos}?
 
 \begin{itemize}
@@ -127,13 +127,13 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org860ff14}]{Muro de Potencia}
+\begin{frame}[label={sec:org9c3198e}]{Muro de Potencia}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./MuroPotencia.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org15fb1ef}]{Muro de Potencia II}
+\begin{frame}[label={sec:org30261bc}]{Muro de Potencia II}
 \begin{itemize}
 \item Aumentar la frecuencia aumenta la potencia necesaria.
 \item Aumentar la potencia aumenta la temperatura, que hay que disipar.
@@ -144,7 +144,7 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 A este problema se le denomina \alert{muro de potencia}.
 \end{frame}
 
-\begin{frame}[label={sec:org64645d6}]{Soluciones}
+\begin{frame}[label={sec:orgf1086c2}]{Soluciones}
 ¿Qué soluciones se pueden plantear?
 
 \begin{itemize}
@@ -160,7 +160,7 @@ A este problema se le denomina \alert{muro de potencia}.
 Nos centraremos en las dos últimas
 \end{frame}
 
-\begin{frame}[label={sec:orgad9e020}]{¿El santo grial?}
+\begin{frame}[label={sec:org08fdc09}]{¿El santo grial?}
 ¿Es el procesamiento paralelo el santo grial?
 
 \begin{quote}
@@ -173,7 +173,7 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgbe61780}]{Julia}
+\begin{frame}[label={sec:org5dc07bc}]{Julia}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{./julia.png}
 \end{center}
@@ -186,11 +186,11 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgbaef461}]{Descargar Julia}
+\begin{frame}[label={sec:orgab3e975}]{Descargar Julia}
 \url{https://julialang.org/}
 \end{frame}
 
-\begin{frame}[label={sec:orga5a24ea}]{Conociendo el ordenador}
+\begin{frame}[label={sec:org1021a44}]{Conociendo el ordenador}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{./CPUX.png}
 \end{center}
@@ -198,6 +198,70 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \begin{itemize}
 \item CPU-Z en Windows
 \item CPU-X en Linux (/proc/cpuinfo, lscpu, dmidecode, \ldots{})
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org9b85ab9}]{MareNostrum}
+Comparemos nuestro ordenador con un supercomputador
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{./MareNostrum.jpg}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:orgcd55cb0}]{Detalles MareNostrum 5}
+\begin{itemize}
+\item MareNostrum 5 fue inaugurado a finales de 2023 en Barcelona.
+\item 6408 nodos basados en Intel Sapphire rapids
+\item 112 cores por nodo
+\item 717696 cores en total
+\item Partición acelerada con 4480 GPUs Nvidia Hopper
+\item Octavo ordenador más potente del mundo
+\item \url{https://top500.org/}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgc7174df}]{Benchmarks}
+\begin{itemize}
+\item Una forma de estimar la potencia real de nuestro computador es mediante benchmarks.
+
+\item Los benchmarks son programas que ejecutan tareas de alta intensidad, algo reales y sacan métricas.
+
+\item Algunos benchmarks importantes: Linpack, Primes95, Whetstone, \ldots{}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgc39503c}]{Linpack}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{./Linpack1.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org1e69991}]{Linpack 2}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{./Linpack2.png}
+\end{center}
+\end{frame}
+
+\begin{frame}[label={sec:org7314344}]{Comparativa}
+\begin{block}{FLOP}
+FLOP: operaciones en coma flotante por segundo
+\end{block}
+
+\begin{block}{Comparativa}
+Según Top500, MareNostrum 5 tiene 138 PFlops (petaflops) ejecutando Linpack.
+En mis pruebas, mi portátil Lenovo ideapad 320 con Intel Core i7-7500U tiene 42 GFlops ejecutando Linpack
+
+\begin{equation}
+\frac{1,38 * 10^{17}}{4,2 * 10^{10}} = 3,2 * 10^6
+\end{equation}
+\end{block}
+\end{frame}
+
+\begin{frame}[label={sec:org21a9b9d}]{Final}
+\begin{itemize}
+\item MareNostrum 5 es 3,200,000 veces más potente que mi ordenador.
+\item ¿Cómo lo consigue?
 \end{itemize}
 \end{frame}
 \end{document}

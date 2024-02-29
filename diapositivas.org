@@ -147,8 +147,55 @@ https://julialang.org/
 - CPU-Z en Windows
 - CPU-X en Linux (/proc/cpuinfo, lscpu, dmidecode, ...)
 
-# TODO
-# CPU-Z
-# MareNostrum
-# TOP500
-# Linpack / GeekBench
+** MareNostrum
+
+Comparemos nuestro ordenador con un supercomputador
+
+#+ATTR_LATEX: :width 0.8\textwidth
+[[./MareNostrum.jpg]]
+
+** Detalles MareNostrum 5
+
+- MareNostrum 5 fue inaugurado a finales de 2023 en Barcelona.
+- 6408 nodos basados en Intel Sapphire rapids
+- 112 cores por nodo
+- 717696 cores en total
+- Partición acelerada con 4480 GPUs Nvidia Hopper
+- Octavo ordenador más potente del mundo
+- https://top500.org/
+
+** Benchmarks
+
+- Una forma de estimar la potencia real de nuestro computador es mediante benchmarks.
+
+- Los benchmarks son programas que ejecutan tareas de alta intensidad, algo reales y sacan métricas.
+
+- Algunos benchmarks importantes: Linpack, Primes95, Whetstone, ...
+
+** Linpack
+
+#+ATTR_LATEX: :width 0.9\textwidth
+[[./Linpack1.png]]
+
+** Linpack 2
+#+ATTR_LATEX: :width 0.7\textwidth
+[[./Linpack2.png]]
+
+** Comparativa
+
+*** FLOP
+
+FLOP: operaciones en coma flotante por segundo
+
+*** Comparativa
+Según Top500, MareNostrum 5 tiene 138 PFlops (petaflops) ejecutando Linpack.
+En mis pruebas, mi portátil Lenovo ideapad 320 con Intel Core i7-7500U tiene 42 GFlops ejecutando Linpack
+
+\begin{equation}
+\frac{1,38 * 10^{17}}{4,2 * 10^{10}} = 3,2 * 10^6
+\end{equation}
+
+** Final
+
+- MareNostrum 5 es 3,200,000 veces más potente que mi ordenador.
+- ¿Cómo lo consigue?
