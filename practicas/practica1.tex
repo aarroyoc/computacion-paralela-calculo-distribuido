@@ -1,0 +1,139 @@
+% Created 2024-03-03 dom 19:11
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[spanish, american]{babel}
+\author{Adrián Arroyo Calle}
+\date{Curso 2023-2024}
+\title{Práctica 1 - GEMM}
+\hypersetup{
+ pdfauthor={Adrián Arroyo Calle},
+ pdftitle={Práctica 1 - GEMM},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Objetivo}
+\label{sec:orgd217228}
+
+Desarrollar una implementación paralela eficiente del producto matriz-matriz generalizado (GEMM) usando Julia.
+
+Se define la operación GEMM como:
+
+$$
+C = C + AB
+$$
+
+donde \(C \in \mathbb{R}^{m \times n}\), \(A \in \mathbb{R}^{m \times k}\), \(B \in \mathbb{R}^{k \times n}\) son matrices con valores reales.
+
+Para ello deberá implementarse:
+
+\subsection{GEMM secuencial}
+\label{sec:orgab94ca1}
+
+Un GEMM secuencial basado en tres bucles.
+
+\begin{verbatim}
+procedure GEMM (A, B, C)
+  input: A M*K-matrix, B K*N-matrix, C M*K-matrix
+  output: C M*N-matrix
+
+  for ( i = 0; i < M; i++ )
+    for ( j = 0; j < N; j++ )
+      for ( k = 0; k < K; k++ )
+        C[i,j] = C[i,j] + A[i,k] * B[k,j]
+end GEMM
+\end{verbatim}
+
+\subsection{Validador}
+\label{sec:org8641572}
+
+Simplemente ejecuta una GEMM secuencial sobre las matrices A, B, C dadas
+y comprueba que el resultado coincida con el almacenado en otra matriz resultado C'
+dada. Esta comprobación debe hacerse sumando las diferencias entre ambas en valor absoluto:
+
+$$
+\sum_{i=1}^{m}\sum_{j=1}^{n} \mid C_{i,j} - C'_{i_j} \mid
+$$
+
+El validador se utilizará para verificar el resultado
+de las ejecuciones paralelas.
+
+\subsection{GEMM paralela}
+\label{sec:org3c978b4}
+
+En la que el trabajo de uno (o varios) bucles se reparta entre los hilos
+que intervienen en la ejecución.
+
+\section{Trabajo a realizar}
+\label{sec:org62725e4}
+
+\begin{enumerate}
+\item Implementar la GEMM secuencial y el validador descritos en la sección anterior.
+\item Implementar 3 versiones válidas (el resultado es numéricamente correcto) de la GEMM paralelizada.
+\item Justificar un caso en el que un determinado bucle de la GEMM no pueda ser paralelizado (el resultado sería numericamente incorrecto).
+\item Realizar un análisis de escalabilidad (fuerte o débil) describiendo las dimensiones de
+las matrices utilizadas en dicho análisis, así como la cantidad de hilos utilizados en las
+pruebas y el número de repeticiones realizadas de cada ejecución. Se presentará tanto
+una tabla reflejando los tiempos de ejecución medidos (el asociado a cada repetición
+y la media), como una gráfica que ilustre la escalabilidad que se observa.
+
+\textbf{Observación 1}: Se recomienda, al menos, repetir cada medida cinco veces (anotando
+todos los tiempos obtenidos en la tabla).
+
+\textbf{Observación 2}: En el caso de que se detecte algún outlier, debe eliminarse antes de hacer
+el cálculo de la media, marcándolo como outlier en la tabla.
+
+\textbf{Observación 3}: Basta con medir el tiempo de la región paralela (tp), no es necesario medir
+también el tiempo total de ejecución.
+
+\textbf{Observación 4}: Las matrices utilizadas en el proceso de experimentación deben ser su-
+ficientemente grandes como para que se llegue a observar una mejora del tiempo de
+ejecución al usar la implementación paralela (no hay que tener miedo a probar productos
+de matrices 1000x1000, 2000x2000\ldots{}). Tras validar con matrices pequeñas (100x100, por
+ejemplo) que el resultado derivado de la ejecución paralela es correcto, puede "comen-
+tarse" la llamada al validador en el código para no "perder el tiempo" con comprobaciones
+innecesarias.
+\item Incluir en la tabla realizada en el apartado anterior una columna donde se indiquen el
+\textbf{speedup} y la \textbf{eficiencia} (según la media de tiempo calculada).
+
+La tabla podría acabar siendo algo así:
+
+\begin{center}
+\begin{tabular}{rllllllll}
+Cantidad de hilos & TP1 & TP2 & TP3 & TP4 & TP5 & MEDIA & Speedup & Eficiencia\\[0pt]
+\hline
+1 (secuencial) &  &  &  &  &  &  &  & \\[0pt]
+2 &  &  &  &  &  &  &  & \\[0pt]
+4 &  &  &  &  &  &  &  & \\[0pt]
+6 &  &  &  &  &  &  &  & \\[0pt]
+\ldots{} &  &  &  &  &  &  &  & \\[0pt]
+\end{tabular}
+\end{center}
+\item Escribir una pequeña reflexión a modo de conclusión del trabajo realizado (uno o dos
+párrafos).
+\end{enumerate}
+
+\section{Entrega}
+\label{sec:orge6f71b1}
+
+La práctica deberá entregarse antes de TODO
+
+Se deberán presentar las distintas implementaciones (en forma de código Julia con extensión .jl) y
+un documento breve incluyendo los resultados derivados de la evaluación (tabla y gráficas), así como
+las reflexiones finales.
+\end{document}

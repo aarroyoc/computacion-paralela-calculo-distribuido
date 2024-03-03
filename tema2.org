@@ -1,0 +1,163 @@
+#+TITLE: Memoria compartida
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Memoria compartida
+
+** ¿Qué es?
+
+- La ley de Moore nos dice que acada 18 meses duplicamos el número de transistores.
+- Podíamos usar esos transistores para aumentar la frecuencia, pero cada vez más difícil
+- Podemos usar los transistores en /núcleos/ adicionales
+- Idea muy popular: prácticamente todos los procesadores actuales son multinúcleo
+
+** Intel Core i7 3960X
+
+#+ATTR_LATEX: :width 0.8\textwidth
+[[./IntelCorei7Die.jpg]]
+
+** Núcleos separados, memoria unificada
+
+- Arquitectura Von Neumman: código y datos en la misma memoria
+- Los núcleos van leyendo de memoria las instrucciones, y las ejecutan de forma *independiente* (control y aritmética).
+- Habrá instrucciones que modifiquen el estado de la memoria.
+- La memoria para todos los núcleos es la misma.
+- Así pues los núcleos son independientes, pero *comparten la misma memoria* (comparten código y datos)
+
+** Pros y contras
+
+Pros
+
+- Solución relativamente barata
+- Al compartir memoria, no hay que copiar datos, lo que mejora el rendimiento
+
+Contras
+
+- Escalabilidad reducida. Los procesadores multinúcleo tienen un límite de núcleos por diseño.
+- Sincronización. Es fácil que dos núcleos operen sobre los mismos datos y generen problemas de sincronización.
+
+** ¿Cómo se consigue?
+
+- Las primitivas necesarias nos las tiene que ofrecer el sistema operativo.
+- Una solución muy popular es /POSIX Threads/ (/pthreads/)
+  - Es nativo en Linux, macOS, Android, FreeBSD, Solaris, AIX, ...
+  - Pero NO es nativo en Windows
+- Para algunos casos muy comunes en supercomputación existe un estándar: OpenMP
+- Se basa en directivas (comentarios) que se añaden al código C, C++ o FORTRAN.
+
+** A alto nivel
+
+- los lenguajes de más alto nivel, como Julia, suelen implementar su propia API similar a OpenMP.
+- Por debajo se implementan usando /pthreads/ u otra API del sistema operativo
+
+** Julia
+
+*** Consultar número de threads
+#+begin_src julia
+julia
+julia> Threads.nthreads()
+1
+#+end_src
+
+- Por defecto Julia se lanza solo con un thread habilitado
+
+*** Ajustar número de threads
+#+begin_src julia
+julia --threads=auto
+julia> Threads.nthreads()
+4
+#+end_src
+
+- Con el parámetro threads podemos ajustar los threads iniciales
+- ~auto~ intentará adivinar el número óptimo de threads. También podemos pasar un número entero.
+
+** Número de threads
+
+- ¿Cuál es el número máximo de threads que puedo meter?
+  - El límite lo pone el sistema operativo. Podemos tener miles de threads.
+- El sistema operativo (el scheduler) *reparte* los threads entre los núcleos.
+  - En Linux hay varios schedulers a elegir y todos son muy configurables.
+- Pero no es efectivo tener más threads que núcleos.
+  - A maś threads, más coste de sincronización. Pero si no hay núcleos para respaldarlos, no se paraleliza.
+  - El número ideal es *tantos threads como núcleos tengamos* (lo que hace ~auto~)
+
+** Macro @spawn
+
+*** Macro @spawn
+#+begin_src julia
+julia> function f()
+           print(Threads.threadid())
+       end
+julia> task = Threads.@spawn f()
+#+end_src
+
+- Con la macro ~@spawn~ creamos un ~Task~ que se ejecuta una función en un thread.
+
+** Macro @spawn
+
+*** Macro @spawn con wait
+#+begin_src julia
+julia> t() = println("Hola desde ", Threads.threadid())
+julia> tasks = wait.([Threads.@spawn t() for i in 1:4])
+Hola desde 3
+Hola desde 4
+Hola desde 2
+Hola desde 1
+#+end_src
+- Sobre la task podemos hacer ~wait~ para esperar a que acabe, o ~fetch~ para además guardar sus resultados en un vector.
+
+
+** Macro @spawn
+
+*** Macro @spawn con fetch
+#+begin_src julia
+julia> t() = Threads.threadid()
+julia> fetch.([Threads.@spawn t() for i in 1:4])
+4-element Vector{Int64}:
+ 1
+ 2
+ 3
+ 4
+#+end_src
+
+** Detalles
+
+- Esta API nos lleva a plantear una arquitectura donde tendremos un thread de *control* y otros de *trabajo*.
+- Las operaciones de control están optimizadas. Podemos llevar la mayor parte del trabajo en N threads de trabajo que se ejecuten en N núcleos.
+- Debemos usar ~wait~ o ~fetch~ para poner barreras de sincronización.
+  
+** Macro @threads
+
+*** Macro @threads
+#+begin_src julia
+julia> Threads.@threads for i in 1:10
+           print(Threads.threadid())
+       end
+1214344312
+#+end_src
+
+** Macro @threads
+- La macro ~@threads~ nos permite paralelizar un bucle for.
+- Distribuye la carga de manera equitativa entre threads
+- Usa todos los threads disponibles
+- Sincronización de barrera incluida
+
+** Práctica 1
+
+- Empezamos la práctica 1
