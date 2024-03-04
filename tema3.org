@@ -1,0 +1,149 @@
+#+TITLE: Análisis de Rendimiento
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Análisis de Rendimiento
+
+** ¿Por qué?
+
+- Tenemos que poder medir cuánto mejoramos nuestro algoritmo
+- Si es que lo mejoramos
+
+** Paralelismo ideal
+
+- /Embarrassingly parallel/ - Geoffre Fox
+- Si un algoritmo de forma secuencial se ejecuta en T, al ser paralelizado con P nodos de procesamiento
+  reduce su tiempo de ejecución a $\frac{T}{P}$.
+- Inalcanzable en la práctica.
+- Existe el /nearly embarrassingly parallel/ en algoritmos que presentan una estructura con divisiones evidentes
+  entre las tareas que hay que asignar a cada nodo de procesamiento.
+
+** Tiempo de ejecución
+
+- La mejor medida de rendimiento posible es el tiempo de ejecución.
+- Otras métricas específicas pueden valer en contextos concretos pero no son tan completas.
+- Podemos dividir el tiempo de ejecución paralelo ($t_{p}$) de la siguiente forma:
+
+  $$
+  t_{p} = t_{comp_secuencial} + \sum_{i=1}^{nrp} max_{i}(t_{comp_paralelo}) + t_{comm}
+  $$
+
+  donde:
+  - $t_{comp_secuencial}$ es el tiempo de cómputo secuencial.
+  - $nrp$ es el número de regiones paralelas.
+  - $max_{i}(t_{comp_paralelo})$ es el tiempo máximo de todos los nodos en una región paralela.
+  - $t_{comm}$ es el tiempo de comunicación.
+
+** Overhead del paralelismo
+
+- Siempre al introducir paralelismo vamos a gastar un tiempo en la gestión de este. A este
+  gasto extra se le llama *overhead*.
+- En base a la definición de paralelismo ideal podemos derivar el overhead del paralelismo:
+  $$
+  t_{o} = P \times t_{p} - t_{s}
+  $$
+
+- Cuanto menor sea $t_{o}$, mejor aprovechamos los recursos.
+
+** Speedup
+
+- Definimos *speedup* S como:
+  $$
+  S = \frac{t_{s}}{t_{p}}
+  $$
+- En el caso ideal, usando n threads, el speedup sería n.
+- Si en algún momento el speedup es mayor que n, hablaríamos de un speedup superlinear.
+- No obstante, el speedup superlinear es muy raro. Es conveniente revisar las mediciones de los tiempos.
+
+** Eficiencia
+
+- Definimos *eficiencia* E como:
+  $$
+  E = \frac{S}{P}
+  $$
+- Dicho de otro modo, cuánto mejoramos respecto a los recursos nuevos que le proporcionamos.
+
+** Escalabilidad
+
+- Definimos *escalabilidad* como la propiedad de un sistema de manejar cada vez más grande.
+- Existen dos tipos de escalabilidad:
+  - Escalabilidad *fuerte*: ¿cómo varía el tiempo respecto al número de recursos para un tamaño de problema fijo /total/?
+  - Escalabilidad *débil*: ¿cómo varía el tiempo respecto al número de recursos para un tamaño de problema fijo /por nodo/?
+
+** Ley de Amdahl
+
+- Presentada por Amdahl en 1967.
+
+*** Ley de Amdahl
+#+begin_quote
+El speedup máximo que puede alcanzar una determinada aplicación que se ejecuta con P unidades de procesamiento
+está limitado por el tiempo necesario para completar la ejecucución de la fracción de la aplicación que se
+ejecuta secuencialmente
+#+end_quote
+
+$$
+S = {1 \over (1 - F_{m}) + {F_{m} \over S_{m}}}
+$$
+
+siendo
+
+- $F_{m}$ la fracción de tiempo que se usa la parte mejorada.
+- $S_{m}$ el speedup de la parte mejorada.
+
+** Ley de Amdahl
+
+- Las partes secuenciales que en algún momento eran insignificantes, eventualmente se convertirán en el tope
+  para poder mejorar más el algoritmo mediante paralelización.
+- El límite de la paralelización lo pone por tanto el *algoritmo*, llegando a haber un límite donde de igual
+  el número de recursos adicionales que se destinen.
+- La eficiencia será mayor con un menor número de procesadores.
+- Esta ley define la escalabilidad *fuerte*.
+
+** Ley de Gustafson
+
+- La ley de Amdahl es muy negativa.
+- Pero presupone que siempre vamos a usar un tamaño de problema fijo. Gustafson propuso en 1988 que si cada vez tenemos más recursos,
+  podemos aumentar el tamaño de los problemas. Lo que hará que sí mejoremos el speedup, ya que procesamos cada vez más tareas en el mismo intervalo de tiempo.
+- Ligada a la escalabilidad *débil*.
+*** Ley de Gustafson
+$$
+S = F_{s} + F_{p} \times P
+$$
+
+** ¿Cómo tomar medidas?
+
+- Mantener el dispositivo con carga de trabajo constante en segundo plano para reducir interferencias.
+- Realizar varias medidas y trabajar con la _media_ para cada test. Detectar outliers.
+- Distinguir bien qué se quiere medir: solamente la región paralela, el programa completo, ...
+
+** Medir tiempo en Julia
+
+- En Julia podemos usar ~@time~ para medir el tiempo de ejecución de una función o de un bloque.
+
+#+begin_src julia
+@time println("Hello World")
+
+...
+
+@time begin
+  a = 12
+  b = a + 15
+  ..
+end
+#+end_src

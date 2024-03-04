@@ -1,0 +1,193 @@
+% Created 2024-03-04 lun 23:54
+% Intended LaTeX compiler: pdflatex
+\documentclass[bigger]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\mode<beamer>{\usetheme{Madrid}}
+\usetheme{default}
+\author{Adrián Arroyo Calle}
+\date{Curso 2023-2024}
+\title{Análisis de Rendimiento}
+\hypersetup{
+ pdfauthor={Adrián Arroyo Calle},
+ pdftitle={Análisis de Rendimiento},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+
+\section{Análisis de Rendimiento}
+\label{sec:orgc020bd3}
+
+\begin{frame}[label={sec:orgb07b9e0}]{¿Por qué?}
+\begin{itemize}
+\item Tenemos que poder medir cuánto mejoramos nuestro algoritmo
+\item Si es que lo mejoramos
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org4c62e26}]{Paralelismo ideal}
+\begin{itemize}
+\item \emph{Embarrassingly parallel} - Geoffre Fox
+\item Si un algoritmo de forma secuencial se ejecuta en T, al ser paralelizado con P nodos de procesamiento
+reduce su tiempo de ejecución a \(\frac{T}{P}\).
+\item Inalcanzable en la práctica.
+\item Existe el \emph{nearly embarrassingly parallel} en algoritmos que presentan una estructura con divisiones evidentes
+entre las tareas que hay que asignar a cada nodo de procesamiento.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orga2ef627}]{Tiempo de ejecución}
+\begin{itemize}
+\item La mejor medida de rendimiento posible es el tiempo de ejecución.
+\item Otras métricas específicas pueden valer en contextos concretos pero no son tan completas.
+\item Podemos dividir el tiempo de ejecución paralelo (\(t_{p}\)) de la siguiente forma:
+
+$$
+  t_{p} = t_{comp_secuencial} + \sum_{i=1}^{nrp} max_{i}(t_{comp_paralelo}) + t_{comm}
+  $$
+
+donde:
+\begin{itemize}
+\item \(t_{comp_secuencial}\) es el tiempo de cómputo secuencial.
+\item \(nrp\) es el número de regiones paralelas.
+\item \(max_{i}(t_{comp_paralelo})\) es el tiempo máximo de todos los nodos en una región paralela.
+\item \(t_{comm}\) es el tiempo de comunicación.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf186aa1}]{Overhead del paralelismo}
+\begin{itemize}
+\item Siempre al introducir paralelismo vamos a gastar un tiempo en la gestión de este. A este
+gasto extra se le llama \alert{overhead}.
+\item En base a la definición de paralelismo ideal podemos derivar el overhead del paralelismo:
+$$
+  t_{o} = P \times t_{p} - t_{s}
+  $$
+
+\item Cuanto menor sea \(t_{o}\), mejor aprovechamos los recursos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgd9f2f8c}]{Speedup}
+\begin{itemize}
+\item Definimos \alert{speedup} S como:
+$$
+  S = \frac{t_{s}}{t_{p}}
+  $$
+\item En el caso ideal, usando n threads, el speedup sería n.
+\item Si en algún momento el speedup es mayor que n, hablaríamos de un speedup superlinear.
+\item No obstante, el speedup superlinear es muy raro. Es conveniente revisar las mediciones de los tiempos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org61b4ee1}]{Eficiencia}
+\begin{itemize}
+\item Definimos \alert{eficiencia} E como:
+$$
+  E = \frac{S}{P}
+  $$
+\item Dicho de otro modo, cuánto mejoramos respecto a los recursos nuevos que le proporcionamos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgaeeab75}]{Escalabilidad}
+\begin{itemize}
+\item Definimos \alert{escalabilidad} como la propiedad de un sistema de manejar cada vez más grande.
+\item Existen dos tipos de escalabilidad:
+\begin{itemize}
+\item Escalabilidad \alert{fuerte}: ¿cómo varía el tiempo respecto al número de recursos para un tamaño de problema fijo \emph{total}?
+\item Escalabilidad \alert{débil}: ¿cómo varía el tiempo respecto al número de recursos para un tamaño de problema fijo \emph{por nodo}?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org40f8fca}]{Ley de Amdahl}
+\begin{itemize}
+\item Presentada por Amdahl en 1967.
+\end{itemize}
+
+\begin{block}{Ley de Amdahl}
+\begin{quote}
+El speedup máximo que puede alcanzar una determinada aplicación que se ejecuta con P unidades de procesamiento
+está limitado por el tiempo necesario para completar la ejecucución de la fracción de la aplicación que se
+ejecuta secuencialmente
+\end{quote}
+
+$$
+S = {1 \over (1 - F_{m}) + {F_{m} \over S_{m}}}
+$$
+
+siendo
+
+\begin{itemize}
+\item \(F_{m}\) la fracción de tiempo que se usa la parte mejorada.
+\item \(S_{m}\) el speedup de la parte mejorada.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[label={sec:org0e79108}]{Ley de Amdahl}
+\begin{itemize}
+\item Las partes secuenciales que en algún momento eran insignificantes, eventualmente se convertirán en el tope
+para poder mejorar más el algoritmo mediante paralelización.
+\item El límite de la paralelización lo pone por tanto el \alert{algoritmo}, llegando a haber un límite donde de igual
+el número de recursos adicionales que se destinen.
+\item La eficiencia será mayor con un menor número de procesadores.
+\item Esta ley define la escalabilidad \alert{fuerte}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orge80ffab}]{Ley de Gustafson}
+\begin{itemize}
+\item La ley de Amdahl es muy negativa.
+\item Pero presupone que siempre vamos a usar un tamaño de problema fijo. Gustafson propuso en 1988 que si cada vez tenemos más recursos,
+podemos aumentar el tamaño de los problemas. Lo que hará que sí mejoremos el speedup, ya que procesamos cada vez más tareas en el mismo intervalo de tiempo.
+\item Ligada a la escalabilidad \alert{débil}.
+\end{itemize}
+\begin{block}{Ley de Gustafson}
+$$
+S = F_{s} + F_{p} \times P
+$$
+\end{block}
+\end{frame}
+
+\begin{frame}[label={sec:orgd8cee22}]{¿Cómo tomar medidas?}
+\begin{itemize}
+\item Mantener el dispositivo con carga de trabajo constante en segundo plano para reducir interferencias.
+\item Realizar varias medidas y trabajar con la \uline{media} para cada test. Detectar outliers.
+\item Distinguir bien qué se quiere medir: solamente la región paralela, el programa completo, \ldots{}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org5d389c1},fragile]{Medir tiempo en Julia}
+ \begin{itemize}
+\item En Julia podemos usar \texttt{@time} para medir el tiempo de ejecución de una función o de un bloque.
+\end{itemize}
+
+\begin{verbatim}
+@time println("Hello World")
+
+...
+
+@time begin
+  a = 12
+  b = a + 15
+  ..
+end
+\end{verbatim}
+\end{frame}
+\end{document}
