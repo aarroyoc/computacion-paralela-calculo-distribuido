@@ -1,0 +1,166 @@
+#+TITLE: Memoria Compartida II
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Memoria compartida II
+
+** Data race
+
+- En un sistema de memoria compartida, la memoria es única pero el procesamiento es independiente.
+- Es posible que varios procesadores intenten acceder a la vez al mismo punto de la memoria.
+- En este caso tenemos una situación de *data race*.
+- Hay que evitar las data race, ya que los bugs que provocan comportan un grado de aleatoriedad elevado.
+  Es posible que en pruebas nunca ocurra nada incorrecto, pero en producción sí. Son difíciles de replicar, /Heisenbug/.
+
+** Atómicos
+
+- La manera más elemental de evitar data races es mediante el uso de *atómicos*.
+- La data race ocurre cuando dos threads leen "a la vez", para posteriormente cada una hacer una modificación sobre el valor.
+  De este modo, uno escribirá correctamente, pero el segundo thread no tendrá en cuenta la escritura inmediatamente anterior
+  del primer thread, obteniendo un valor incorrecto.
+- Las operaciones atómicas garantizan que entre la lectura y el guardado en memoria del nuevo dato, no ha accedido ningún otro thread.
+- Los atómicos tienen que implementarse a nivel de hardware.
+
+** Atómicos en Julia
+
+#+begin_src julia
+function s(a)
+    c = 0.0
+    for x in a
+        c = c + x
+    end
+    c
+end
+
+function p(a)
+    c = 0.0
+    Threads.@threads for x in a
+        c = c + x
+    end
+    c
+end
+
+a = rand(10000)
+s(a) # 5005.2377...
+s(a) # 5005.2377...
+p(a) # 3774.5142...
+p(a) # 1646.2098...
+#+end_src
+
+** Atómicos en Julia
+
+#+begin_src julia
+function atomic_p(a)
+    c = Threads.Atomic{Float64}(0.0)
+    Threads.@threads for x in a
+        Threads.atomic_add!(c, x)
+    end
+    c
+end
+#+end_src
+
+** Atómicos en Julia
+
+- Solo algunas operaciones se soportan de forma atómica.
+- Tenemos que usar variables de tipo atómico.
+- El resultado aun así puede variar ligeramente si el orden de las operaciones afecta (como en el caso de aritmética con floats).
+- Las operaciones con atómicos son más lentas.
+- En este caso podría haberse reordenado la paralelización para haber evitado usar atómicos.
+
+** Atómicos como pieza
+
+- Usando atómicos como base se pueden implementar otras primitivas de sincronización.
+- Mutex, semáforos, condiciones, ...
+- Especialmente útiles cuando el algoritmo maneja datos *heterogéneos*.
+- Una abstracción de alto nivel son los *canales*.
+
+** Canales
+
+- Sistema de comunicación entre threads.
+- Por un lado podemos enviar mensajes: ~put!~
+- Por otro lado podemos recibir mensajes: ~take!~
+- Es seguro compartir los canales entre threads.
+
+** Canales
+#+begin_src julia
+  function suma(data_ch, sum_ch)
+      c = 0.0
+      a = take!(data_ch)
+      for x in a
+	  c = c + x
+      end
+      put!(sum_ch, c)
+  end
+#+end_src
+
+** Canales
+#+begin_src julia
+      function channel_example(a)
+	  data_ch = Channel(Threads.nthreads())
+	  sum_ch = Channel(Threads.nthreads())
+	  for i in 1:Threads.nthreads()
+	      Threads.@spawn suma(data_ch, sum_ch)
+	  end
+	  chunks = Iterators.partition(
+	      a, length(a) ÷ Threads.nthreads())
+	  for chunk in chunks
+	      put!(data_ch, chunk)
+	  end
+	  s = 0.0
+	  for i in 1:Threads.nthreads()
+	      s += take!(sum_ch)
+	  end
+	  s
+      end
+#+end_src
+
+** Async
+
+- Últimamente está surgiendo el concepto de programación *asíncrona*.
+- El concepto fundamental es el *futuro*. Las funciones en vez de devolver un valor, devuelven una promesa
+  de que en un futuro habrá un valor.
+- Los futuros se pueden pasar a otras funciones y hacer composiciones complejas pero /sencillas/ de entender.
+- El uso principal de la programación asíncrona es en situaciones donde el rendimiento se encuentra limitado
+  *por I/O*, no por CPU.
+
+** Async
+
+- Tareas de I/O:
+  - Leer un fichero
+  - Mandar datos a través de la red
+  - Interactuar con una base de datos
+- Durante el tiempo que tarda en resolver la I/O, la CPU no hace nada. No somos eficientes.
+- Mediante futuros, podemos devolver inmediatamente un valor, sin hacer una espera.
+- Llegado el momento, el futuro se ejecutará. Cuando llegue una espera de I/O, el sistema empezará a ejecutar otro futuro, *en el mismo thread*.
+- De ese modo la CPU no se queda esperando a tareas de I/O si puede seguir procesando futuros.
+- En algunos sistemas sí se puede delegar el futuro a un thread independiente, pero no es lo habitual.
+
+** Async en Julia
+
+- En Julia los futuros son los /Task/, que sirven tanto para multithreading como para programación asíncrona.
+- Si un task se crea con ~Threads.@spawn~ se ejecuta en un thread independiente.
+- Si un task se crea con ~@async~ se ejecuta en el thread que lo creó.
+- Podemos usar ~@sync~ sobre un bloque para sincronizar varios ~@async~
+
+#+begin_src julia
+@time @sync begin
+  @async sleep(10)
+  @async sleep(10)
+end
+#+end_src
