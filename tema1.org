@@ -183,9 +183,9 @@ Comparemos nuestro ordenador con un supercomputador
 
 ** Comparativa
 
-*** FLOP
+*** FLOPS
 
-FLOP: operaciones en coma flotante por segundo
+FLOPS: operaciones en coma flotante por segundo
 
 *** Comparativa
 Según Top500, MareNostrum 5 tiene 138 PFlops (petaflops) ejecutando Linpack.

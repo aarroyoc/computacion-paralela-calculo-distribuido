@@ -1,4 +1,4 @@
-% Created 2024-03-02 sáb 09:33
+% Created 2024-03-11 lun 22:45
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -29,9 +29,9 @@
 \maketitle
 
 \section{Introducción}
-\label{sec:org67d4fa4}
+\label{sec:org60931df}
 
-\begin{frame}[label={sec:org5078592}]{Contenidos de la asignatura}
+\begin{frame}[label={sec:org5cd42c5}]{Contenidos de la asignatura}
 \begin{itemize}
 \item Introducción
 \begin{itemize}
@@ -54,7 +54,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org5d08b25}]{Evaluación}
+\begin{frame}[label={sec:org73bdc8c}]{Evaluación}
 \begin{block}{Primera convocatoria}
 \begin{block}{Porcentajes}
 \begin{itemize}
@@ -78,7 +78,7 @@
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org028fd5f}]{Evaluación II}
+\begin{frame}[label={sec:orgf03cbab}]{Evaluación II}
 \begin{block}{Segunda convocatoria}
 \begin{itemize}
 \item Un examen sustituye el proyecto final
@@ -88,11 +88,11 @@
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org1848f80}]{Motivación}
+\begin{frame}[label={sec:orgfb39cc6}]{Motivación}
 ¿Por qué es importante la computación paralela y el cálculo distribuido?
 \end{frame}
 
-\begin{frame}[label={sec:orgf007528}]{Motivación II}
+\begin{frame}[label={sec:org35101be}]{Motivación II}
 \begin{itemize}
 \item El microprocesador es el cerebro del ordenador. Ejecuta operaciones aritméticas y de control.
 \item Ley de Moore
@@ -111,13 +111,13 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org74d6b0a}]{Motivación III}
+\begin{frame}[label={sec:orgb2fe755}]{Motivación III}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./VUP.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgee4a9b5}]{Motivación IV}
+\begin{frame}[label={sec:orga4000aa}]{Motivación IV}
 ¿Por qué cada vez los procesadores cada vez mejoran \alert{menos}?
 
 \begin{itemize}
@@ -127,13 +127,13 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org766e07f}]{Muro de Potencia}
+\begin{frame}[label={sec:org926bfea}]{Muro de Potencia}
 \begin{center}
 \includegraphics[width=.9\linewidth]{./MuroPotencia.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org6809ecd}]{Muro de Potencia II}
+\begin{frame}[label={sec:orgcb5f635}]{Muro de Potencia II}
 \begin{itemize}
 \item Aumentar la frecuencia aumenta la potencia necesaria.
 \item Aumentar la potencia aumenta la temperatura, que hay que disipar.
@@ -144,7 +144,7 @@ Aproximadamente cada 2 años se duplica el número de transistores en un micropr
 A este problema se le denomina \alert{muro de potencia}.
 \end{frame}
 
-\begin{frame}[label={sec:orgb198714}]{Soluciones}
+\begin{frame}[label={sec:org1253c3f}]{Soluciones}
 ¿Qué soluciones se pueden plantear?
 
 \begin{itemize}
@@ -160,7 +160,7 @@ A este problema se le denomina \alert{muro de potencia}.
 Nos centraremos en las dos últimas
 \end{frame}
 
-\begin{frame}[label={sec:org1f6147b}]{¿El santo grial?}
+\begin{frame}[label={sec:orgf45157b}]{¿El santo grial?}
 ¿Es el procesamiento paralelo el santo grial?
 
 \begin{quote}
@@ -173,7 +173,7 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org951f0c3}]{Julia}
+\begin{frame}[label={sec:org9de4e7b}]{Julia}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{./julia.png}
 \end{center}
@@ -186,11 +186,11 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org88e118e}]{Descargar Julia}
+\begin{frame}[label={sec:org39ecd3a}]{Descargar Julia}
 \url{https://julialang.org/}
 \end{frame}
 
-\begin{frame}[label={sec:orgd30b290}]{Conociendo el ordenador}
+\begin{frame}[label={sec:orgce2dcc4}]{Conociendo el ordenador}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{./CPUX.png}
 \end{center}
@@ -201,7 +201,7 @@ Una mujer embarazada a da a luz un bebé tras nueve meses. Si consigo nueve muje
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgc0d9366}]{MareNostrum}
+\begin{frame}[label={sec:org627712f}]{MareNostrum}
 Comparemos nuestro ordenador con un supercomputador
 
 \begin{center}
@@ -209,7 +209,7 @@ Comparemos nuestro ordenador con un supercomputador
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org1fef556}]{Detalles MareNostrum 5}
+\begin{frame}[label={sec:org9d6548e}]{Detalles MareNostrum 5}
 \begin{itemize}
 \item MareNostrum 5 fue inaugurado a finales de 2023 en Barcelona.
 \item 6408 nodos basados en Intel Sapphire rapids
@@ -221,7 +221,7 @@ Comparemos nuestro ordenador con un supercomputador
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org41686be}]{Benchmarks}
+\begin{frame}[label={sec:orgeff5b9d}]{Benchmarks}
 \begin{itemize}
 \item Una forma de estimar la potencia real de nuestro computador es mediante benchmarks.
 
@@ -231,21 +231,21 @@ Comparemos nuestro ordenador con un supercomputador
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7101ea0}]{Linpack}
+\begin{frame}[label={sec:orgb876c40}]{Linpack}
 \begin{center}
 \includegraphics[width=0.9\textwidth]{./Linpack1.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgc4c3265}]{Linpack 2}
+\begin{frame}[label={sec:org717b820}]{Linpack 2}
 \begin{center}
 \includegraphics[width=0.7\textwidth]{./Linpack2.png}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:orgfcc06f1}]{Comparativa}
-\begin{block}{FLOP}
-FLOP: operaciones en coma flotante por segundo
+\begin{frame}[label={sec:org062f8b1}]{Comparativa}
+\begin{block}{FLOPS}
+FLOPS: operaciones en coma flotante por segundo
 \end{block}
 
 \begin{block}{Comparativa}
@@ -258,7 +258,7 @@ En mis pruebas, mi portátil Lenovo ideapad 320 con Intel Core i7-7500U tiene 42
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org1efee77}]{Final}
+\begin{frame}[label={sec:orgac966c1}]{Final}
 \begin{itemize}
 \item MareNostrum 5 es 3,200,000 veces más potente que mi ordenador.
 \item ¿Cómo lo consigue?

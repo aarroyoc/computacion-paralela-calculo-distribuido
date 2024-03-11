@@ -1,0 +1,65 @@
+#+TITLE: Práctica 2 - GEMM
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[spanish]{babel}
+
+* Objetivo
+
+Desarrollar una implementación paralela eficiente del producto matriz-matriz generalizado (GEMM) usando Julia.
+
+Se define la operación GEMM como:
+
+$$
+C = C + AB
+$$
+
+donde $C \in \mathbb{R}^{m \times n}$, $A \in \mathbb{R}^{m \times k}$, $B \in \mathbb{R}^{k \times n}$ son matrices con valores reales.
+
+Para ello deberá implementarse:
+
+** GEMM secuencial
+
+Un GEMM secuencial basado en tres bucles.
+
+#+begin_src
+procedure GEMM (A, B, C)
+  input: A M*K-matrix, B K*N-matrix, C M*K-matrix
+  output: C M*N-matrix
+
+  for ( i = 0; i < M; i++ )
+    for ( j = 0; j < N; j++ )
+      for ( k = 0; k < K; k++ )
+        C[i,j] = C[i,j] + A[i,k] * B[k,j]
+end GEMM
+#+end_src
+
+** Validador
+
+Simplemente ejecuta una GEMM secuencial sobre las matrices A, B, C dadas
+y comprueba que el resultado coincida con el almacenado en otra matriz resultado C'
+dada. Esta comprobación debe hacerse sumando las diferencias entre ambas en valor absoluto:
+
+$$
+\sum_{i=1}^{m}\sum_{j=1}^{n} \mid C_{i,j} - C'_{i_j} \mid
+$$
+
+El validador se utilizará para verificar el resultado
+de las ejecuciones paralelas.
+
+** GEMM paralela
+
+En la que el trabajo de uno (o varios) bucles se reparta entre diferentes nodos usando técnicas
+de programación distribuida.
+
+* Trabajo a realizar
+
+1. Implementar la GEMM secuencial y el validador descritos en la sección anterior.
+2. Implementar una versión de la GEMM paralelizada usando *DistributedArrays*.
+3. Complementar la versión GEMM paralelizada con técnicas de paralelismo en memoria compartida.
+4. Si disponemos de máquinas virtuales, hacer un *análisis de rendimiento* comparando la versión secuencial,
+   la versión paralelizada solamente con *DistributedArrays* y la versión que combina paralelismo de memoria
+   compartida con el de memoria distribuida.

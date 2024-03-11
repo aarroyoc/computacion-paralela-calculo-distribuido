@@ -1,0 +1,226 @@
+#+TITLE: Memoria Distribuida
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Memoria distribuida
+
+** Memoria distribuida
+
+- El paralelismo basado en memoria compartida se basa en la existencia de procesadores multinúcleo.
+- Hay un número máximo de núcleos que podemos tener en un procesador. Muchas tareas pueden requerir todavía más nodos.
+- Pero podemos conectar diferentes ordenadores vía red.
+- Paradigma diferente: cada nodo tiene *su propia memoria*. Toda la comunicación debe realizarse *vía red*.
+
+** Memoria distribuida
+
+- Así es como funcionan los superordenadores, aunque cada nodo sea muy potente, el verdadero impulso es que todos los nodos
+  pueden trabajar en la misma tarea.
+- Uno de los estándares más usados es *MPI* (/Message Passing Interface/), compatible con varios lenguajes. En Julia disponible bajo la librería /MPI.jl/.
+- En Julia se dispone además de una librería más sencilla, solo compatible con Julia, llamada /Distributed.jl/.
+
+** Clúster
+
+- Al conjunto de máquinas que trabajan juntas, así como la comunicación entre ellas, se le llama *clúster*.
+- En un *clúster* no todas las máquinas pueden tener la misma potencia. Para evitar desequilibrios,
+  es necesario hacer un *balanceo de carga*.
+- Este balanceo puede ser estático, en base a datos que sepamos sobre los nodos o dinámico, según el sistema va
+  viendo con qué velocidad se procesan los datos.
+
+** Clústers en Julia
+
+- En Julia los clústers se gestionan con /ClusterManager.jl/. Por defecto tendremos dos tipos de clúster: local y SSH.
+- Local usa como nodos procesos extra dentro de la misma máquina.
+  - No mejora el rendimiento respecto a la memoria compartida pero es útil para pruebas
+- SSH se conecta a máquinas externas a través del protocolo SSH. Las máquinas deberán tener Julia ya instalado.
+
+** Clústers en Julia
+
+#+begin_src julia
+using Distributed
+
+Distributed.addprocs(4) # añadir 4 nodos locales
+Distributed.addprocs(
+    [("hostname", 4)],
+    dir="/home/ubuntu",
+    tunnel=true) # añadir 4 nodos en la máquina hostname
+#+end_src
+
+- Con ~addprocs~ añadimos máquinas al clúster. Dentro de cada máquina podemos ejecutar varios nodos.
+
+** Consultar clúster
+
+#+begin_src julia
+Distributed.procs() # listado de pids (process ids)
+Distributed.workers() # listado de pids de los workers
+#+end_src
+
+- Habitualmente hay 1 proceso más que el número de workers.
+- Hay un proceso que se dedica a la sincronización. Normalmente el primer proceso.
+
+** @spawnat
+
+- ~@spawnat~ es similar a ~@spawn~, nos permite lanzar una función a otro nodo.
+- Es obligatorio indicar el /PID/ del nodo que va a procesar o ~:any~.
+- Al hacer ~@spawnat~ se lanza un mensaje a través de la red para que el nodo empiece a trabajar.
+- Más tarde podemos obtener el resultado con ~fetch~, que manda otro mensaje y el nodo responde.
+
+** @spawnat
+
+- Aquí la memoria no es compartida, todo lo que queramos que se ejecute, se lo debemos pasar.
+- Incluidas las funciones.
+
+** @spawnat
+
+#+begin_src julia
+x = Distributed.@spawnat 2 begin
+      sleep(3)
+      rand(3)
+    end
+fetch(x) # espera y devuelve el resultado
+#+end_src
+
+** @spawnat
+
+#+begin_src julia
+function p()
+  rand(3)
+end
+x = Distributed.@spawnat 2 p()
+fetch(x) # error
+#+end_src
+
+** @spawnat
+
+- Mover datos es una operación costosa.
+- Hay que evitar mover datos innecesariamente.
+
+#+begin_src julia
+A = rand(1000, 1000)
+x = @spawnat :any A^2
+
+vs
+
+x = @spawnat :any rand(1000, 1000)^2
+#+end_src
+
+** WorkerPool
+
+- Distribuir el trabajo manualmente mediante PIDs puede no ser práctico.
+- Podemos usar ~WorkerPool~ para administrar un subconjunto de nodos.
+- Por defecto ya hay un WorkerPool con todos los nodos creados.
+- Podemos usar ~remotecall~ para hacer llamadas.
+
+** WorkerPool
+
+#+begin_src julia
+wp = WorkerPool([2, 3])
+A = rand(1000)
+f = remotecall(maximum, wp, A)
+fetch(f)
+#+end_src
+
+- Se elige un nodo que esté ocioso para ejecutar la función seleccionada, con los datos que enviamos.
+
+** @everywhere
+
+- Una opción para ejecutar algo en todos los nodos es usar ~@everywhere~.
+- Útil para enviar las funciones y variables globales.
+
+** @everywhere
+
+#+begin_src julia
+@everywhere function sin_vect(A)
+  sin.(A)
+end
+
+@spawnat :any begin
+  A = rand(1000)
+  sin_vect(A)
+end
+#+end_src
+
+** @distributed
+
+- De forma similar a ~@threads~, existe ~@distributed~ para paralelizar de forma sencilla bucles for.
+- Una limitación fundamental: al no haber memoria compartida no podemos modificar datos en vectores/matrices en paralelo.
+
+** @distributed
+#+begin_src julia
+  A = rand(1000)
+  B = zeros(size(A))
+
+  Threads.@threads for i in 1:length(A)
+    B[i] = sqrt(A[i])
+  end
+
+  Distributed.@distributed for i in 1:length(A)
+    B[i] = sqrt(A[i])
+  end
+#+end_src
+
+** SharedArrays
+
+- Podemos solventar esta limitación mediante los SharedArrays.
+- Replicamos el comportamiento de la memoria compartida, también con sus defectos (data races).
+- Limitación: necesita memoria compartida. Solo funciona si los nodos son todos locales.
+
+** DistributedArrays
+
+- Arrays distribuidos entre los nodos. Cada nodo tiene solo acceso a la parte que se le ha asignado del array.
+- Solo el proceso de control puede ver la imagen completa. Aunque eso no quiere decir que almacene una copia.
+- Por red solo se transmiten los trozos del array que necesita el nodo en concreto.
+
+** DistributedArrays
+
+#+begin_src julia
+@everywhere begin
+  import Pkg
+  Pkg.add("DistributedArrays")
+  using DistributedArrays
+end
+#+end_src
+
+** DArray
+
+- Un DArray se distingue de un array normal por varios detalles:
+  - Se especifica en qué workers reside (especificado mediante PIDs)
+  - Se especifica en cuantos chunks se tiene que dividir por cada dimensión de la matriz.
+    - Por ejemplo, una matriz 100x100 con dist 2,2 distribuirá la matriz en los siguientes grupos: (1:50, 1:50), (1:50, 51:100), (51:100, 1:50) y (51:100, 51:100).
+- La forma más fácil de crear un DArray es partir de un array normal y usar ~distribute~.
+- Para acceder a la parte local de un DArray, usamos ~[:L]~.
+
+** DArray
+
+#+begin_src julia
+  A = rand(100, 100)
+  B = distribute(A, dist=(2, 2))
+
+  @sync for w in Distributed.workers()
+      @spawnat w begin
+	  B[:L] = B[:L] .+ 1
+      end
+  end
+#+end_src
+
+** DArray
+
+- Podemos obtener qué rango de índices del array grande tenemos en el worker mediante ~localindices~.
+- Convertimos el DArray en array normal usando ~Array~.
+- Todos los nodos tienen acceso de lectura. Solo un nodo, el propietario, tiene acceso de escritura al propio chunk.
+- Aun así, es interesante dividir los arrays de lectura, para poder enviar menos datos a los nodos.

@@ -1,0 +1,146 @@
+#+TITLE: Memoria Distribuida II
+#+AUTHOR: Adrián Arroyo Calle
+#+EMAIL: adrian.arroyo.calle@uva.es
+#+DATE: Curso 2023-2024
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE: es
+#+OPTIONS:   H:2 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:https://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_LINK_UP:
+#+HTML_LINK_HOME:
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [bigger]
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+latex_header: \mode<beamer>{\usetheme{Madrid}}
+
+* Memoria distribuida II
+
+** Memoria distribuida
+
+- Usar memoria distribuida no solo tiene un overhead superior a nivel computacional, también a nivel cognitivo.
+- En este tema analizaremos algunas mejoras que se pueden aplicar a determinados casos.
+
+** pmap
+
+- Los clústeres pueden ser homogéneos o no. Cada nodo puede tener potencia diferente, tanto por
+  fabricación como por condiciones externas (uso compartido, temperatura, ...)
+- También es posible que el problema tenga zonas fáciles y otras difíciles.
+- Un reparto equitativo puede no aprovechar el clúster (poca eficiencia)
+- Julia dispone de ~pmap~.
+
+** pmap
+
+- pmap soluciona varios problemas respecto a ~@distributed~:
+  - Permite obtener el resultado de una transformación elemento a elemento /map/. Con ~@distributed~ vimos que al no poder
+    compartir memoria, era complicado.
+  - Hace balanceo de carga
+  - Permite mandar los datos mediante /batches/
+- En general, ~@distributed~ es más ligero pero pmap es mejor cuando la tarea que debemos hacer por elemento es intensiva.
+
+** pmap
+
+#+begin_src julia
+A = rand(1000)
+B = rand(1000)
+
+@everywhere function suma(a, b)
+  a + b
+end
+
+@time pmap(suma, A, B, batch_size=1)
+# Matriz sumada. T: 10s
+@time pmap(suma, A, B, batch_size=100)
+# Matriz sumada. T: 1s
+#+end_src
+
+** MapReduce
+
+- /MapReduce: Simplified Data Processing on Large Clusters/ paper de 2004 de Google.
+- Muchos algoritmos paralelos se pueden simplicar en dos etapas: map y reduce.
+- En la etapa de map, por cada elemento de una lista hacemos una transformación que nos a otro elemento.
+- En la etapa de reduce combinamos los elementos hasta tener un resultado final.
+- Es la base de sistemas empresariales de Big Data como Spark o Hadoop.
+
+** MapReduce
+
+#+ATTR_LATEX: :width 0.9\textwidth
+[[./MapReduce.jpg]]
+
+** MapReduce
+
+- ~@distributed~ nos va a permitir indicar una función de reducción al estilo MapReduce.
+- La función de reducción tomará los elementos reducidos hasta ahora y un nuevo elemento. Deberá de funcionar sin importar el orden que apliquemos.
+- Con la función de reducción podemos combinar los datos de cada chunk.
+
+** MapReduce
+
+#+begin_src julia
+A = rand(1000)
+
+x = Distributed.@distributed (+) for i in 1:length(A)
+      sqrt(A[i])
+    end
+#+end_src
+
+** RemoteChannel
+
+- De forma similar a ~Channel~, vamos a encontrar un sistema de comunicación entre nodos de alto nivel llamado ~RemoteChannel~.
+- Cada ~RemoteChannel~ tiene que vivir en un nodo.
+- Podemos configurar el Channel interno a través de una función.
+
+** RemoteChannel
+
+#+begin_src julia
+  @everywhere function suma(data_ch, sum_ch)
+      c = 0.0
+      a = take!(data_ch)
+      for x in a
+	  c = c + x
+      end
+      put!(sum_ch, c)
+  end
+#+end_src
+
+** RemoteChannel
+#+begin_src julia
+data_ch = RemoteChannel(()->Channel{Any}(4))
+sum_ch = RemoteChannel(()->Channel{Float64}(4))
+for w in Distributed.workers()
+    @spawnat w suma(data_ch, sum_ch)
+end
+chunks = Iterators.partition(
+    a, length(a) ÷ Distributed.nworkers())
+for chunk in chunks
+    put!(data_ch, chunk)
+end
+s = 0.0
+for i in 1:Distributed.nworkers()
+    s += take!(sum_ch)
+end
+#+end_src
+
+** Dagger
+
+- Nos hemos centrado principalmente en datos con un flujo muy sencillo.
+- ¿Qué pasa cuando el flujo de datos se entrelaza y se complica?
+- Puede que no identifiquemos manualmente los momentos para paralelizar.
+- Hay librerías como /Dagger/ que construyen un grafo dirigido acíclico de las operaciones sobre nuestro código.
+  - Y paralelizan cuando es posible, tanto por recursos como porque tenemos todos los datos para empezar
+
+** Dagger
+
+#+begin_src julia
+a = Dagger.@spawn rand(100, 100)
+b = Dagger.@spawn rand(100, 100)
+# a y b se ejecutan en paralelo
+
+c = Dagger.@spawn a + b 
+d = Dagger.@spawn a * b
+# c y d se ejecutan en paralelo
+wait(Dagger.@spawn println("sum: ", c, ", prod: ", d))
+#+end_src

@@ -1,0 +1,93 @@
+% Created 2024-03-09 sáb 14:13
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[spanish, american]{babel}
+\author{Adrián Arroyo Calle}
+\date{Curso 2023-2024}
+\title{Práctica 2 - GEMM}
+\hypersetup{
+ pdfauthor={Adrián Arroyo Calle},
+ pdftitle={Práctica 2 - GEMM},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section{Objetivo}
+\label{sec:org7de4d88}
+
+Desarrollar una implementación paralela eficiente del producto matriz-matriz generalizado (GEMM) usando Julia.
+
+Se define la operación GEMM como:
+
+$$
+C = C + AB
+$$
+
+donde \(C \in \mathbb{R}^{m \times n}\), \(A \in \mathbb{R}^{m \times k}\), \(B \in \mathbb{R}^{k \times n}\) son matrices con valores reales.
+
+Para ello deberá implementarse:
+
+\subsection{GEMM secuencial}
+\label{sec:org1a6c010}
+
+Un GEMM secuencial basado en tres bucles.
+
+\begin{verbatim}
+procedure GEMM (A, B, C)
+  input: A M*K-matrix, B K*N-matrix, C M*K-matrix
+  output: C M*N-matrix
+
+  for ( i = 0; i < M; i++ )
+    for ( j = 0; j < N; j++ )
+      for ( k = 0; k < K; k++ )
+        C[i,j] = C[i,j] + A[i,k] * B[k,j]
+end GEMM
+\end{verbatim}
+
+\subsection{Validador}
+\label{sec:orgd51ad09}
+
+Simplemente ejecuta una GEMM secuencial sobre las matrices A, B, C dadas
+y comprueba que el resultado coincida con el almacenado en otra matriz resultado C'
+dada. Esta comprobación debe hacerse sumando las diferencias entre ambas en valor absoluto:
+
+$$
+\sum_{i=1}^{m}\sum_{j=1}^{n} \mid C_{i,j} - C'_{i_j} \mid
+$$
+
+El validador se utilizará para verificar el resultado
+de las ejecuciones paralelas.
+
+\subsection{GEMM paralela}
+\label{sec:orgabbbae6}
+
+En la que el trabajo de uno (o varios) bucles se reparta entre diferentes nodos usando técnicas
+de programación distribuida.
+
+\section{Trabajo a realizar}
+\label{sec:org9d583af}
+
+\begin{enumerate}
+\item Implementar la GEMM secuencial y el validador descritos en la sección anterior.
+\item Implementar una versión de la GEMM paralelizada usando \textbf{DistributedArrays}.
+\item Complementar la versión GEMM paralelizada con técnicas de paralelismo en memoria compartida.
+\item Si disponemos de máquinas virtuales, hacer un \textbf{análisis de rendimiento} comparando la versión secuencial,
+la versión paralelizada solamente con \textbf{DistributedArrays} y la versión que combina paralelismo de memoria
+compartida con el de memoria distribuida.
+\end{enumerate}
+\end{document}

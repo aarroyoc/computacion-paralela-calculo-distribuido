@@ -1,0 +1,279 @@
+% Created 2024-03-09 sáb 14:07
+% Intended LaTeX compiler: pdflatex
+\documentclass[bigger]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\mode<beamer>{\usetheme{Madrid}}
+\usetheme{default}
+\author{Adrián Arroyo Calle}
+\date{Curso 2023-2024}
+\title{Memoria Distribuida}
+\hypersetup{
+ pdfauthor={Adrián Arroyo Calle},
+ pdftitle={Memoria Distribuida},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdflang={Spanish}}
+\begin{document}
+
+\maketitle
+
+\section{Memoria distribuida}
+\label{sec:orga1ea5f9}
+
+\begin{frame}[label={sec:orgf5c10c4}]{Memoria distribuida}
+\begin{itemize}
+\item El paralelismo basado en memoria compartida se basa en la existencia de procesadores multinúcleo.
+\item Hay un número máximo de núcleos que podemos tener en un procesador. Muchas tareas pueden requerir todavía más nodos.
+\item Pero podemos conectar diferentes ordenadores vía red.
+\item Paradigma diferente: cada nodo tiene \alert{su propia memoria}. Toda la comunicación debe realizarse \alert{vía red}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org798d328}]{Memoria distribuida}
+\begin{itemize}
+\item Así es como funcionan los superordenadores, aunque cada nodo sea muy potente, el verdadero impulso es que todos los nodos
+pueden trabajar en la misma tarea.
+\item Uno de los estándares más usados es \alert{MPI} (\emph{Message Passing Interface}), compatible con varios lenguajes. En Julia disponible bajo la librería \emph{MPI.jl}.
+\item En Julia se dispone además de una librería más sencilla, solo compatible con Julia, llamada \emph{Distributed.jl}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgb2bfa37}]{Clúster}
+\begin{itemize}
+\item Al conjunto de máquinas que trabajan juntas, así como la comunicación entre ellas, se le llama \alert{clúster}.
+\item En un \alert{clúster} no todas las máquinas pueden tener la misma potencia. Para evitar desequilibrios,
+es necesario hacer un \alert{balanceo de carga}.
+\item Este balanceo puede ser estático, en base a datos que sepamos sobre los nodos o dinámico, según el sistema va
+viendo con qué velocidad se procesan los datos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org48baefd}]{Clústers en Julia}
+\begin{itemize}
+\item En Julia los clústers se gestionan con \emph{ClusterManager.jl}. Por defecto tendremos dos tipos de clúster: local y SSH.
+\item Local usa como nodos procesos extra dentro de la misma máquina.
+\begin{itemize}
+\item No mejora el rendimiento respecto a la memoria compartida pero es útil para pruebas
+\end{itemize}
+\item SSH se conecta a máquinas externas a través del protocolo SSH. Las máquinas deberán tener Julia ya instalado.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7c60060},fragile]{Clústers en Julia}
+ \begin{verbatim}
+using Distributed
+
+Distributed.addprocs(4) # añadir 4 nodos locales
+Distributed.addprocs(
+    [("hostname", 4)],
+    dir="/home/ubuntu",
+    tunnel=true) # añadir 4 nodos en la máquina hostname
+\end{verbatim}
+
+\begin{itemize}
+\item Con \texttt{addprocs} añadimos máquinas al clúster. Dentro de cada máquina podemos ejecutar varios nodos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org9471869},fragile]{Consultar clúster}
+ \begin{verbatim}
+Distributed.procs() # listado de pids (process ids)
+Distributed.workers() # listado de pids de los workers
+\end{verbatim}
+
+\begin{itemize}
+\item Habitualmente hay 1 proceso más que el número de workers.
+\item Hay un proceso que se dedica a la sincronización. Normalmente el primer proceso.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org8234781},fragile]{@spawnat}
+ \begin{itemize}
+\item \texttt{@spawnat} es similar a \texttt{@spawn}, nos permite lanzar una función a otro nodo.
+\item Es obligatorio indicar el \emph{PID} del nodo que va a procesar o \texttt{:any}.
+\item Al hacer \texttt{@spawnat} se lanza un mensaje a través de la red para que el nodo empiece a trabajar.
+\item Más tarde podemos obtener el resultado con \texttt{fetch}, que manda otro mensaje y el nodo responde.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgd495179}]{@spawnat}
+\begin{itemize}
+\item Aquí la memoria no es compartida, todo lo que queramos que se ejecute, se lo debemos pasar.
+\item Incluidas las funciones.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1a11039},fragile]{@spawnat}
+ \begin{verbatim}
+x = Distributed.@spawnat 2 begin
+      sleep(3)
+      rand(3)
+    end
+fetch(x) # espera y devuelve el resultado
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:org36aa180},fragile]{@spawnat}
+ \begin{verbatim}
+function p()
+  rand(3)
+end
+x = Distributed.@spawnat 2 p()
+fetch(x) # error
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:orgaca797f},fragile]{@spawnat}
+ \begin{itemize}
+\item Mover datos es una operación costosa.
+\item Hay que evitar mover datos innecesariamente.
+\end{itemize}
+
+\begin{verbatim}
+A = rand(1000, 1000)
+x = @spawnat :any A^2
+
+vs
+
+x = @spawnat :any rand(1000, 1000)^2
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:org4bc7df6},fragile]{WorkerPool}
+ \begin{itemize}
+\item Distribuir el trabajo manualmente mediante PIDs puede no ser práctico.
+\item Podemos usar \texttt{WorkerPool} para administrar un subconjunto de nodos.
+\item Por defecto ya hay un WorkerPool con todos los nodos creados.
+\item Podemos usar \texttt{remotecall} para hacer llamadas.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org3c8a5b7},fragile]{WorkerPool}
+ \begin{verbatim}
+wp = WorkerPool([2, 3])
+A = rand(1000)
+f = remotecall(maximum, wp, A)
+fetch(f)
+\end{verbatim}
+
+\begin{itemize}
+\item Se elige un nodo que esté ocioso para ejecutar la función seleccionada, con los datos que enviamos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgecbceaa},fragile]{@everywhere}
+ \begin{itemize}
+\item Una opción para ejecutar algo en todos los nodos es usar \texttt{@everywhere}.
+\item Útil para enviar las funciones y variables globales.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgcb9dd1b},fragile]{@everywhere}
+ \begin{verbatim}
+@everywhere function sin_vect(A)
+  sin.(A)
+end
+
+@spawnat :any begin
+  A = rand(1000)
+  sin_vect(A)
+end
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:orgb8a4279},fragile]{@distributed}
+ \begin{itemize}
+\item De forma similar a \texttt{@threads}, existe \texttt{@distributed} para paralelizar de forma sencilla bucles for.
+\item Una limitación fundamental: al no haber memoria compartida no podemos modificar datos en vectores/matrices en paralelo.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org36b766a},fragile]{@distributed}
+ \begin{verbatim}
+A = rand(1000)
+B = zeros(size(A))
+
+Threads.@threads for i in 1:length(A)
+  B[i] = sqrt(A[i])
+end
+
+Distributed.@distributed for i in 1:length(A)
+  B[i] = sqrt(A[i])
+end
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:orgd3e0d89}]{SharedArrays}
+\begin{itemize}
+\item Podemos solventar esta limitación mediante los SharedArrays.
+\item Replicamos el comportamiento de la memoria compartida, también con sus defectos (data races).
+\item Limitación: necesita memoria compartida. Solo funciona si los nodos son todos locales.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org3fd9e9e}]{DistributedArrays}
+\begin{itemize}
+\item Arrays distribuidos entre los nodos. Cada nodo tiene solo acceso a la parte que se le ha asignado del array.
+\item Solo el proceso de control puede ver la imagen completa. Aunque eso no quiere decir que almacene una copia.
+\item Por red solo se transmiten los trozos del array que necesita el nodo en concreto.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org9de50e1},fragile]{DistributedArrays}
+ \begin{verbatim}
+@everywhere begin
+  import Pkg
+  Pkg.add("DistributedArrays")
+  using DistributedArrays
+end
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:orgbf48adf},fragile]{DArray}
+ \begin{itemize}
+\item Un DArray se distingue de un array normal por varios detalles:
+\begin{itemize}
+\item Se especifica en qué workers reside (especificado mediante PIDs)
+\item Se especifica en cuantos chunks se tiene que dividir por cada dimensión de la matriz.
+\begin{itemize}
+\item Por ejemplo, una matriz 100x100 con dist 2,2 distribuirá la matriz en los siguientes grupos: (1:50, 1:50), (1:50, 51:100), (51:100, 1:50) y (51:100, 51:100).
+\end{itemize}
+\end{itemize}
+\item La forma más fácil de crear un DArray es partir de un array normal y usar \texttt{distribute}.
+\item Para acceder a la parte local de un DArray, usamos \texttt{[:L]}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf807e5c},fragile]{DArray}
+ \begin{verbatim}
+A = rand(100, 100)
+B = distribute(A, dist=(2, 2))
+
+@sync for w in Distributed.workers()
+    @spawnat w begin
+        B[:L] = B[:L] .+ 1
+    end
+end
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[label={sec:org58d4920},fragile]{DArray}
+ \begin{itemize}
+\item Podemos obtener qué rango de índices del array grande tenemos en el worker mediante \texttt{localindices}.
+\item Convertimos el DArray en array normal usando \texttt{Array}.
+\item Todos los nodos tienen acceso de lectura. Solo un nodo, el propietario, tiene acceso de escritura al propio chunk.
+\item Aun así, es interesante dividir los arrays de lectura, para poder enviar menos datos a los nodos.
+\end{itemize}
+\end{frame}
+\end{document}

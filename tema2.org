@@ -157,6 +157,7 @@ julia> Threads.@threads for i in 1:10
 - Distribuye la carga de manera equitativa entre threads
 - Usa todos los threads disponibles
 - Sincronización de barrera incluida
+- Cuidado al user bucles anidados
 
 ** Práctica 1
 
