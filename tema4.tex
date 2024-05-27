@@ -1,4 +1,4 @@
-% Created 2024-03-05 mar 23:54
+% Created 2024-04-07 dom 22:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -22,16 +22,16 @@
  pdftitle={Memoria Compartida II},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdfcreator={Emacs 29.3 (Org mode 9.6.15)}, 
  pdflang={Spanish}}
 \begin{document}
 
 \maketitle
 
 \section{Memoria compartida II}
-\label{sec:org7ffc79c}
+\label{sec:orgeab7d02}
 
-\begin{frame}[label={sec:orgde81548}]{Data race}
+\begin{frame}[label={sec:org2978592}]{Data race}
 \begin{itemize}
 \item En un sistema de memoria compartida, la memoria es única pero el procesamiento es independiente.
 \item Es posible que varios procesadores intenten acceder a la vez al mismo punto de la memoria.
@@ -41,7 +41,7 @@ Es posible que en pruebas nunca ocurra nada incorrecto, pero en producción sí.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org4d48435}]{Atómicos}
+\begin{frame}[label={sec:org9305230}]{Atómicos}
 \begin{itemize}
 \item La manera más elemental de evitar data races es mediante el uso de \alert{atómicos}.
 \item La data race ocurre cuando dos threads leen "a la vez", para posteriormente cada una hacer una modificación sobre el valor.
@@ -52,7 +52,7 @@ del primer thread, obteniendo un valor incorrecto.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3cd721d},fragile]{Atómicos en Julia}
+\begin{frame}[label={sec:orgb85ccd3},fragile]{Atómicos en Julia}
  \begin{verbatim}
 function s(a)
     c = 0.0
@@ -78,7 +78,7 @@ p(a) # 1646.2098...
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org3326d47},fragile]{Atómicos en Julia}
+\begin{frame}[label={sec:org0971f9f},fragile]{Atómicos en Julia}
  \begin{verbatim}
 function atomic_p(a)
     c = Threads.Atomic{Float64}(0.0)
@@ -90,7 +90,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org935509d}]{Atómicos en Julia}
+\begin{frame}[label={sec:org2cb388c}]{Atómicos en Julia}
 \begin{itemize}
 \item Solo algunas operaciones se soportan de forma atómica.
 \item Tenemos que usar variables de tipo atómico.
@@ -100,7 +100,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org04b6f49}]{Atómicos como pieza}
+\begin{frame}[label={sec:org4f47ab5}]{Atómicos como pieza}
 \begin{itemize}
 \item Usando atómicos como base se pueden implementar otras primitivas de sincronización.
 \item Mutex, semáforos, condiciones, \ldots{}
@@ -109,7 +109,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org96dd805},fragile]{Canales}
+\begin{frame}[label={sec:org4f6ff34},fragile]{Canales}
  \begin{itemize}
 \item Sistema de comunicación entre threads.
 \item Por un lado podemos enviar mensajes: \texttt{put!}
@@ -118,7 +118,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orga091a9b},fragile]{Canales}
+\begin{frame}[label={sec:org76c8b1a},fragile]{Canales}
  \begin{verbatim}
 function suma(data_ch, sum_ch)
     c = 0.0
@@ -131,7 +131,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org027bc55},fragile]{Canales}
+\begin{frame}[label={sec:org7e7dcab},fragile]{Canales}
  \begin{verbatim}
 function channel_example(a)
     data_ch = Channel(Threads.nthreads())
@@ -153,7 +153,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgd96758d}]{Async}
+\begin{frame}[label={sec:org23baeff}]{Async}
 \begin{itemize}
 \item Últimamente está surgiendo el concepto de programación \alert{asíncrona}.
 \item El concepto fundamental es el \alert{futuro}. Las funciones en vez de devolver un valor, devuelven una promesa
@@ -164,7 +164,7 @@ de que en un futuro habrá un valor.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org2b2a7d7}]{Async}
+\begin{frame}[label={sec:orga1c862b}]{Async}
 \begin{itemize}
 \item Tareas de I/O:
 \begin{itemize}
@@ -180,7 +180,7 @@ de que en un futuro habrá un valor.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgcce7731},fragile]{Async en Julia}
+\begin{frame}[label={sec:org14b7d58},fragile]{Async en Julia}
  \begin{itemize}
 \item En Julia los futuros son los \emph{Task}, que sirven tanto para multithreading como para programación asíncrona.
 \item Si un task se crea con \texttt{Threads.@spawn} se ejecuta en un thread independiente.

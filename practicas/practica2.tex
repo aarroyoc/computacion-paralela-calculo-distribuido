@@ -1,4 +1,4 @@
-% Created 2024-03-09 sáb 14:13
+% Created 2024-04-07 dom 22:33
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -21,14 +21,14 @@
  pdftitle={Práctica 2 - GEMM},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdfcreator={Emacs 29.3 (Org mode 9.6.15)}, 
  pdflang={English}}
 \begin{document}
 
 \maketitle
 
 \section{Objetivo}
-\label{sec:org7de4d88}
+\label{sec:org4f31ce4}
 
 Desarrollar una implementación paralela eficiente del producto matriz-matriz generalizado (GEMM) usando Julia.
 
@@ -43,7 +43,7 @@ donde \(C \in \mathbb{R}^{m \times n}\), \(A \in \mathbb{R}^{m \times k}\), \(B 
 Para ello deberá implementarse:
 
 \subsection{GEMM secuencial}
-\label{sec:org1a6c010}
+\label{sec:orgc6eb738}
 
 Un GEMM secuencial basado en tres bucles.
 
@@ -60,7 +60,7 @@ end GEMM
 \end{verbatim}
 
 \subsection{Validador}
-\label{sec:orgd51ad09}
+\label{sec:org3155083}
 
 Simplemente ejecuta una GEMM secuencial sobre las matrices A, B, C dadas
 y comprueba que el resultado coincida con el almacenado en otra matriz resultado C'
@@ -74,13 +74,13 @@ El validador se utilizará para verificar el resultado
 de las ejecuciones paralelas.
 
 \subsection{GEMM paralela}
-\label{sec:orgabbbae6}
+\label{sec:org04fba3e}
 
 En la que el trabajo de uno (o varios) bucles se reparta entre diferentes nodos usando técnicas
 de programación distribuida.
 
 \section{Trabajo a realizar}
-\label{sec:org9d583af}
+\label{sec:org201142e}
 
 \begin{enumerate}
 \item Implementar la GEMM secuencial y el validador descritos en la sección anterior.

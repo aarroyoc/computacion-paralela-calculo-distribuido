@@ -1,4 +1,4 @@
-% Created 2024-03-03 dom 18:04
+% Created 2024-04-07 dom 22:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -22,16 +22,16 @@
  pdftitle={Breve introducción a Julia},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdfcreator={Emacs 29.3 (Org mode 9.6.15)}, 
  pdflang={Spanish}}
 \begin{document}
 
 \maketitle
 
 \section{Breve introducción a Julia}
-\label{sec:orgce1b015}
+\label{sec:orgc53a95c}
 
-\begin{frame}[label={sec:org384dd24}]{Julia}
+\begin{frame}[label={sec:org518c2d9}]{Julia}
 \begin{center}
 \includegraphics[width=0.4\textwidth]{./julia.png}
 \end{center}
@@ -44,11 +44,11 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgdafe723}]{Descargar Julia}
+\begin{frame}[label={sec:orgb4a3bb7}]{Descargar Julia}
 \url{https://julialang.org/}
 \end{frame}
 
-\begin{frame}[label={sec:orgf0dd4a9},fragile]{Ejecutar programas}
+\begin{frame}[label={sec:orgffafce7},fragile]{Ejecutar programas}
  \begin{block}{Ejecutar programa en Julia}
 \begin{verbatim}
 $ julia script.jl
@@ -62,7 +62,7 @@ $ julia
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org4b8b702},fragile]{Variables}
+\begin{frame}[label={sec:org2e5be27},fragile]{Variables}
  \begin{itemize}
 \item Asignamos variables con \texttt{=}.
 \item Las variables son mutables.
@@ -75,7 +75,7 @@ c = "cadena de texto"
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgcb1e97f},fragile]{Vectores y matrices}
+\begin{frame}[label={sec:org9ce0e76},fragile]{Vectores y matrices}
  \begin{itemize}
 \item Podemos crear vectores y matrices rellenos de ceros con \texttt{zeros}.
 \item Vectores de 1D y 2D tienen sintaxis especiales.
@@ -84,7 +84,7 @@ c = "cadena de texto"
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org58032d3},fragile]{Vectores y matrices}
+\begin{frame}[label={sec:orgf4dcca7},fragile]{Vectores y matrices}
  \begin{verbatim}
 a = zeros(2,2)
 a[1,1] = 5
@@ -98,7 +98,7 @@ julia> a
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org8a9261a},fragile]{Vectores y matrices}
+\begin{frame}[label={sec:org704e48e},fragile]{Vectores y matrices}
  \begin{verbatim}
 a = [1,2,3,4] # 4-element Vector{Int64}
 a = [1 2;3 4] # 2x2 Matrix{Int64}
@@ -110,7 +110,7 @@ a[1,:] # 1 2
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org5a5b8cb},fragile]{Estructuras de control}
+\begin{frame}[label={sec:orgc40d623},fragile]{Estructuras de control}
  \begin{itemize}
 \item Condicionales con if/elseif/else/end
 \item Bucles con while/end y for in
@@ -126,7 +126,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org8136c72},fragile]{Estructuras de control}
+\begin{frame}[label={sec:orgb883709},fragile]{Estructuras de control}
  \begin{verbatim}
 a = [1, 2, 3]
 suma = 0
@@ -138,7 +138,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgd6ca58b},fragile]{Estructuras de control}
+\begin{frame}[label={sec:orgac10c3e},fragile]{Estructuras de control}
  \begin{verbatim}
 a = [1, 2, 3]
 suma = 0
@@ -148,7 +148,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org1e45b1c},fragile]{List comprehensions y rangos}
+\begin{frame}[label={sec:org332de34},fragile]{List comprehensions y rangos}
  \begin{itemize}
 \item Podemos expresar rangos con \texttt{A:B} donde A es el inicio y B el final.
 \item Podemos generar nuevas listas de forma compacta con list comprehensions
@@ -159,7 +159,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org4f3121f},fragile]{Funciones}
+\begin{frame}[label={sec:org6373764},fragile]{Funciones}
  \begin{itemize}
 \item Las funciones se definen con la palabra \texttt{function}
 \item Opcionalmente se pueden anotar con tipos
@@ -173,7 +173,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgbecbab4},fragile]{Vectorización}
+\begin{frame}[label={sec:org0fa03a4},fragile]{Vectorización}
  \begin{itemize}
 \item En Julia las funciones soportan \emph{vectorización}.
 \item Una función que trabaja con un elemento individual se puede hacer que trabaje con N elementos.
@@ -187,7 +187,7 @@ cos.([0, 0.5, pi, 2*pi]) # [1.0, 0.8775, -1.0, 1.0]
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org5166c68},fragile]{Extra}
+\begin{frame}[label={sec:org37b9bd7},fragile]{Extra}
  \begin{itemize}
 \item Algunas funciones están en módulos que hay que importar con \texttt{using}.
 \item Podemos generar matrices aleatorias con \texttt{rand}.

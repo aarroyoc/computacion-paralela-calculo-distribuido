@@ -1,4 +1,4 @@
-% Created 2024-03-09 sáb 14:07
+% Created 2024-04-07 dom 22:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -22,16 +22,16 @@
  pdftitle={Memoria Distribuida},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 29.2 (Org mode 9.6.15)}, 
+ pdfcreator={Emacs 29.3 (Org mode 9.6.15)}, 
  pdflang={Spanish}}
 \begin{document}
 
 \maketitle
 
 \section{Memoria distribuida}
-\label{sec:orga1ea5f9}
+\label{sec:orgf8da49b}
 
-\begin{frame}[label={sec:orgf5c10c4}]{Memoria distribuida}
+\begin{frame}[label={sec:orgccc0c10}]{Memoria distribuida}
 \begin{itemize}
 \item El paralelismo basado en memoria compartida se basa en la existencia de procesadores multinúcleo.
 \item Hay un número máximo de núcleos que podemos tener en un procesador. Muchas tareas pueden requerir todavía más nodos.
@@ -40,7 +40,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org798d328}]{Memoria distribuida}
+\begin{frame}[label={sec:org72dae54}]{Memoria distribuida}
 \begin{itemize}
 \item Así es como funcionan los superordenadores, aunque cada nodo sea muy potente, el verdadero impulso es que todos los nodos
 pueden trabajar en la misma tarea.
@@ -49,7 +49,7 @@ pueden trabajar en la misma tarea.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgb2bfa37}]{Clúster}
+\begin{frame}[label={sec:org7a9a4e7}]{Clúster}
 \begin{itemize}
 \item Al conjunto de máquinas que trabajan juntas, así como la comunicación entre ellas, se le llama \alert{clúster}.
 \item En un \alert{clúster} no todas las máquinas pueden tener la misma potencia. Para evitar desequilibrios,
@@ -59,7 +59,7 @@ viendo con qué velocidad se procesan los datos.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org48baefd}]{Clústers en Julia}
+\begin{frame}[label={sec:org3a8de72}]{Clústers en Julia}
 \begin{itemize}
 \item En Julia los clústers se gestionan con \emph{ClusterManager.jl}. Por defecto tendremos dos tipos de clúster: local y SSH.
 \item Local usa como nodos procesos extra dentro de la misma máquina.
@@ -70,7 +70,7 @@ viendo con qué velocidad se procesan los datos.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7c60060},fragile]{Clústers en Julia}
+\begin{frame}[label={sec:orgd824577},fragile]{Clústers en Julia}
  \begin{verbatim}
 using Distributed
 
@@ -86,7 +86,7 @@ Distributed.addprocs(
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org9471869},fragile]{Consultar clúster}
+\begin{frame}[label={sec:orgc243603},fragile]{Consultar clúster}
  \begin{verbatim}
 Distributed.procs() # listado de pids (process ids)
 Distributed.workers() # listado de pids de los workers
@@ -98,7 +98,7 @@ Distributed.workers() # listado de pids de los workers
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org8234781},fragile]{@spawnat}
+\begin{frame}[label={sec:org571fa35},fragile]{@spawnat}
  \begin{itemize}
 \item \texttt{@spawnat} es similar a \texttt{@spawn}, nos permite lanzar una función a otro nodo.
 \item Es obligatorio indicar el \emph{PID} del nodo que va a procesar o \texttt{:any}.
@@ -107,14 +107,14 @@ Distributed.workers() # listado de pids de los workers
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd495179}]{@spawnat}
+\begin{frame}[label={sec:orga9cf065}]{@spawnat}
 \begin{itemize}
 \item Aquí la memoria no es compartida, todo lo que queramos que se ejecute, se lo debemos pasar.
 \item Incluidas las funciones.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org1a11039},fragile]{@spawnat}
+\begin{frame}[label={sec:org5079a28},fragile]{@spawnat}
  \begin{verbatim}
 x = Distributed.@spawnat 2 begin
       sleep(3)
@@ -124,7 +124,7 @@ fetch(x) # espera y devuelve el resultado
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org36aa180},fragile]{@spawnat}
+\begin{frame}[label={sec:org755dd76},fragile]{@spawnat}
  \begin{verbatim}
 function p()
   rand(3)
@@ -134,7 +134,7 @@ fetch(x) # error
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgaca797f},fragile]{@spawnat}
+\begin{frame}[label={sec:org493b4ea},fragile]{@spawnat}
  \begin{itemize}
 \item Mover datos es una operación costosa.
 \item Hay que evitar mover datos innecesariamente.
@@ -150,7 +150,7 @@ x = @spawnat :any rand(1000, 1000)^2
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org4bc7df6},fragile]{WorkerPool}
+\begin{frame}[label={sec:org396ff1b},fragile]{WorkerPool}
  \begin{itemize}
 \item Distribuir el trabajo manualmente mediante PIDs puede no ser práctico.
 \item Podemos usar \texttt{WorkerPool} para administrar un subconjunto de nodos.
@@ -159,7 +159,7 @@ x = @spawnat :any rand(1000, 1000)^2
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3c8a5b7},fragile]{WorkerPool}
+\begin{frame}[label={sec:orgfd4d0c3},fragile]{WorkerPool}
  \begin{verbatim}
 wp = WorkerPool([2, 3])
 A = rand(1000)
@@ -172,14 +172,14 @@ fetch(f)
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgecbceaa},fragile]{@everywhere}
+\begin{frame}[label={sec:org4ea8afd},fragile]{@everywhere}
  \begin{itemize}
 \item Una opción para ejecutar algo en todos los nodos es usar \texttt{@everywhere}.
 \item Útil para enviar las funciones y variables globales.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgcb9dd1b},fragile]{@everywhere}
+\begin{frame}[label={sec:orga82dba0},fragile]{@everywhere}
  \begin{verbatim}
 @everywhere function sin_vect(A)
   sin.(A)
@@ -192,14 +192,14 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgb8a4279},fragile]{@distributed}
+\begin{frame}[label={sec:org138425a},fragile]{@distributed}
  \begin{itemize}
 \item De forma similar a \texttt{@threads}, existe \texttt{@distributed} para paralelizar de forma sencilla bucles for.
 \item Una limitación fundamental: al no haber memoria compartida no podemos modificar datos en vectores/matrices en paralelo.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org36b766a},fragile]{@distributed}
+\begin{frame}[label={sec:org4ff5ba3},fragile]{@distributed}
  \begin{verbatim}
 A = rand(1000)
 B = zeros(size(A))
@@ -214,7 +214,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgd3e0d89}]{SharedArrays}
+\begin{frame}[label={sec:orge9f324b}]{SharedArrays}
 \begin{itemize}
 \item Podemos solventar esta limitación mediante los SharedArrays.
 \item Replicamos el comportamiento de la memoria compartida, también con sus defectos (data races).
@@ -222,7 +222,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3fd9e9e}]{DistributedArrays}
+\begin{frame}[label={sec:orgf730015}]{DistributedArrays}
 \begin{itemize}
 \item Arrays distribuidos entre los nodos. Cada nodo tiene solo acceso a la parte que se le ha asignado del array.
 \item Solo el proceso de control puede ver la imagen completa. Aunque eso no quiere decir que almacene una copia.
@@ -230,7 +230,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org9de50e1},fragile]{DistributedArrays}
+\begin{frame}[label={sec:org6fa7cfd},fragile]{DistributedArrays}
  \begin{verbatim}
 @everywhere begin
   import Pkg
@@ -240,7 +240,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:orgbf48adf},fragile]{DArray}
+\begin{frame}[label={sec:org9cb1772},fragile]{DArray}
  \begin{itemize}
 \item Un DArray se distingue de un array normal por varios detalles:
 \begin{itemize}
@@ -255,7 +255,7 @@ end
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgf807e5c},fragile]{DArray}
+\begin{frame}[label={sec:org4409530},fragile]{DArray}
  \begin{verbatim}
 A = rand(100, 100)
 B = distribute(A, dist=(2, 2))
@@ -268,7 +268,7 @@ end
 \end{verbatim}
 \end{frame}
 
-\begin{frame}[label={sec:org58d4920},fragile]{DArray}
+\begin{frame}[label={sec:org79fb0e8},fragile]{DArray}
  \begin{itemize}
 \item Podemos obtener qué rango de índices del array grande tenemos en el worker mediante \texttt{localindices}.
 \item Convertimos el DArray en array normal usando \texttt{Array}.
