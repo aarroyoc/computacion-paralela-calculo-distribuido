@@ -1,4 +1,4 @@
-% Created 2024-04-07 dom 22:24
+% Created 2024-05-31 vie 17:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -29,16 +29,16 @@
 \maketitle
 
 \section{Análisis de Rendimiento}
-\label{sec:orgee097ca}
+\label{sec:orgce2d498}
 
-\begin{frame}[label={sec:org3dbd28f}]{¿Por qué?}
+\begin{frame}[label={sec:orgb0fd450}]{¿Por qué?}
 \begin{itemize}
 \item Tenemos que poder medir cuánto mejoramos nuestro algoritmo
 \item Si es que lo mejoramos
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org1b0f7e9}]{Paralelismo ideal}
+\begin{frame}[label={sec:org3891fb2}]{Paralelismo ideal}
 \begin{itemize}
 \item \emph{Embarrassingly parallel} - Geoffre Fox
 \item Si un algoritmo de forma secuencial se ejecuta en T, al ser paralelizado con P nodos de procesamiento
@@ -49,7 +49,7 @@ entre las tareas que hay que asignar a cada nodo de procesamiento.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org60de0ae}]{Tiempo de ejecución}
+\begin{frame}[label={sec:orgeddea4f}]{Tiempo de ejecución}
 \begin{itemize}
 \item La mejor medida de rendimiento posible es el tiempo de ejecución.
 \item Otras métricas específicas pueden valer en contextos concretos pero no son tan completas.
@@ -69,7 +69,7 @@ donde:
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgee85bf1}]{Overhead del paralelismo}
+\begin{frame}[label={sec:org710e153}]{Overhead del paralelismo}
 \begin{itemize}
 \item Siempre al introducir paralelismo vamos a gastar un tiempo en la gestión de este. A este
 gasto extra se le llama \alert{overhead}.
@@ -82,7 +82,7 @@ $$
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org3b4cc97}]{Speedup}
+\begin{frame}[label={sec:orge81c208}]{Speedup}
 \begin{itemize}
 \item Definimos \alert{speedup} S como:
 $$
@@ -94,7 +94,7 @@ $$
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org7b74fe5}]{Eficiencia}
+\begin{frame}[label={sec:org22b1f88}]{Eficiencia}
 \begin{itemize}
 \item Definimos \alert{eficiencia} E como:
 $$
@@ -104,7 +104,7 @@ $$
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd257ed6}]{Escalabilidad}
+\begin{frame}[label={sec:org5198c22}]{Escalabilidad}
 \begin{itemize}
 \item Definimos \alert{escalabilidad} como la propiedad de un sistema de manejar cada vez más grande.
 \item Existen dos tipos de escalabilidad:
@@ -115,7 +115,7 @@ $$
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org75b6420}]{Ley de Amdahl}
+\begin{frame}[label={sec:org6262ad5}]{Ley de Amdahl}
 \begin{itemize}
 \item Presentada por Amdahl en 1967.
 \end{itemize}
@@ -140,7 +140,7 @@ siendo
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:orgf674b91}]{Ley de Amdahl}
+\begin{frame}[label={sec:org7941700}]{Ley de Amdahl}
 \begin{itemize}
 \item Las partes secuenciales que en algún momento eran insignificantes, eventualmente se convertirán en el tope
 para poder mejorar más el algoritmo mediante paralelización.
@@ -151,7 +151,7 @@ el número de recursos adicionales que se destinen.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org22b89a6}]{Ley de Gustafson}
+\begin{frame}[label={sec:org855f16f}]{Ley de Gustafson}
 \begin{itemize}
 \item La ley de Amdahl es muy negativa.
 \item Pero presupone que siempre vamos a usar un tamaño de problema fijo. Gustafson propuso en 1988 que si cada vez tenemos más recursos,
@@ -165,7 +165,7 @@ $$
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org479bc79}]{¿Cómo tomar medidas?}
+\begin{frame}[label={sec:org488a219}]{¿Cómo tomar medidas?}
 \begin{itemize}
 \item Mantener el dispositivo con carga de trabajo constante en segundo plano para reducir interferencias.
 \item Realizar varias medidas y trabajar con la \uline{media} para cada test. Detectar outliers.
@@ -173,7 +173,7 @@ $$
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgd6d1409},fragile]{Medir tiempo en Julia}
+\begin{frame}[label={sec:orgbe0e1ec},fragile]{Medir tiempo en Julia}
  \begin{itemize}
 \item En Julia podemos usar \texttt{@time} para medir el tiempo de ejecución de una función o de un bloque.
 \end{itemize}

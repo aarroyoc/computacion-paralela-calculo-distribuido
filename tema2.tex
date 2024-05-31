@@ -1,4 +1,4 @@
-% Created 2024-04-07 dom 22:24
+% Created 2024-05-31 vie 17:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[bigger]{beamer}
 \usepackage[utf8]{inputenc}
@@ -29,9 +29,9 @@
 \maketitle
 
 \section{Memoria compartida}
-\label{sec:org470e0a1}
+\label{sec:orgdfc0fea}
 
-\begin{frame}[label={sec:orgbfdedbd}]{¿Qué es?}
+\begin{frame}[label={sec:orge05ebe0}]{¿Qué es?}
 \begin{itemize}
 \item La ley de Moore nos dice que acada 18 meses duplicamos el número de transistores.
 \item Podíamos usar esos transistores para aumentar la frecuencia, pero cada vez más difícil
@@ -40,13 +40,13 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgaa4c53c}]{Intel Core i7 3960X}
+\begin{frame}[label={sec:org1036679}]{Intel Core i7 3960X}
 \begin{center}
 \includegraphics[width=0.8\textwidth]{./IntelCorei7Die.jpg}
 \end{center}
 \end{frame}
 
-\begin{frame}[label={sec:org61a0ef6}]{Núcleos separados, memoria unificada}
+\begin{frame}[label={sec:org65aca0b}]{Núcleos separados, memoria unificada}
 \begin{itemize}
 \item Arquitectura Von Neumman: código y datos en la misma memoria
 \item Los núcleos van leyendo de memoria las instrucciones, y las ejecutan de forma \alert{independiente} (control y aritmética).
@@ -56,7 +56,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgcc8593f}]{Pros y contras}
+\begin{frame}[label={sec:org40a1d99}]{Pros y contras}
 Pros
 
 \begin{itemize}
@@ -72,7 +72,7 @@ Contras
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org170094f}]{¿Cómo se consigue?}
+\begin{frame}[label={sec:org7ccbe29}]{¿Cómo se consigue?}
 \begin{itemize}
 \item Las primitivas necesarias nos las tiene que ofrecer el sistema operativo.
 \item Una solución muy popular es \emph{POSIX Threads} (\emph{pthreads})
@@ -85,14 +85,14 @@ Contras
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org24e37c2}]{A alto nivel}
+\begin{frame}[label={sec:orga909059}]{A alto nivel}
 \begin{itemize}
 \item los lenguajes de más alto nivel, como Julia, suelen implementar su propia API similar a OpenMP.
 \item Por debajo se implementan usando \emph{pthreads} u otra API del sistema operativo
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:org99a4724},fragile]{Julia}
+\begin{frame}[label={sec:org621bc10},fragile]{Julia}
  \begin{block}{Consultar número de threads}
 \begin{verbatim}
 julia
@@ -119,7 +119,7 @@ julia> Threads.nthreads()
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org1894ebd},fragile]{Número de threads}
+\begin{frame}[label={sec:orgf152f67},fragile]{Número de threads}
  \begin{itemize}
 \item ¿Cuál es el número máximo de threads que puedo meter?
 \begin{itemize}
@@ -137,7 +137,7 @@ julia> Threads.nthreads()
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgf7af5ac},fragile]{Macro @spawn}
+\begin{frame}[label={sec:orgdebee84},fragile]{Macro @spawn}
  \begin{block}{Macro @spawn}
 \begin{verbatim}
 julia> function f()
@@ -152,7 +152,7 @@ julia> task = Threads.@spawn f()
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org7e99852},fragile]{Macro @spawn}
+\begin{frame}[label={sec:orgfed8c1e},fragile]{Macro @spawn}
  \begin{block}{Macro @spawn con wait}
 \begin{verbatim}
 julia> t() = println("Hola desde ", Threads.threadid())
@@ -169,7 +169,7 @@ Hola desde 1
 \end{frame}
 
 
-\begin{frame}[label={sec:orge21e676},fragile]{Macro @spawn}
+\begin{frame}[label={sec:org4b6445b},fragile]{Macro @spawn}
  \begin{block}{Macro @spawn con fetch}
 \begin{verbatim}
 julia> t() = Threads.threadid()
@@ -183,7 +183,7 @@ julia> fetch.([Threads.@spawn t() for i in 1:4])
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:orgb61a73c},fragile]{Detalles}
+\begin{frame}[label={sec:org98c6502},fragile]{Detalles}
  \begin{itemize}
 \item Esta API nos lleva a plantear una arquitectura donde tendremos un thread de \alert{control} y otros de \alert{trabajo}.
 \item Las operaciones de control están optimizadas. Podemos llevar la mayor parte del trabajo en N threads de trabajo que se ejecuten en N núcleos.
@@ -191,7 +191,7 @@ julia> fetch.([Threads.@spawn t() for i in 1:4])
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgf6757fd},fragile]{Macro @threads}
+\begin{frame}[label={sec:orgda62f60},fragile]{Macro @threads}
  \begin{block}{Macro @threads}
 \begin{verbatim}
 julia> Threads.@threads for i in 1:10
@@ -202,7 +202,7 @@ julia> Threads.@threads for i in 1:10
 \end{block}
 \end{frame}
 
-\begin{frame}[label={sec:org37a5a90},fragile]{Macro @threads}
+\begin{frame}[label={sec:orgd78ea4b},fragile]{Macro @threads}
  \begin{itemize}
 \item La macro \texttt{@threads} nos permite paralelizar un bucle for.
 \item Distribuye la carga de manera equitativa entre threads
@@ -212,7 +212,7 @@ julia> Threads.@threads for i in 1:10
 \end{itemize}
 \end{frame}
 
-\begin{frame}[label={sec:orgf65c2d1}]{Práctica 1}
+\begin{frame}[label={sec:org4c4115c}]{Práctica 1}
 \begin{itemize}
 \item Empezamos la práctica 1
 \end{itemize}

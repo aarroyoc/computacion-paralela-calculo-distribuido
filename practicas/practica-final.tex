@@ -1,4 +1,4 @@
-% Created 2024-04-07 dom 22:33
+% Created 2024-05-31 vie 17:42
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -29,7 +29,7 @@
 \maketitle
 
 \section{Objetivo}
-\label{sec:org09d0349}
+\label{sec:org2e444fb}
 
 Desarrollar una implementación paralela eficiente de un programa que genere imágenes de algún fractal usando Julia.
 
@@ -45,12 +45,12 @@ las mejoras.
 \end{center}
 
 \section{Fractales}
-\label{sec:org5c028a9}
+\label{sec:org27a55cf}
 
 Se podrá elegir uno de los siguientes fractales:
 
 \subsection{Conjunto de Mandelbrot}
-\label{sec:org73f274d}
+\label{sec:org7ce0e38}
 
 Quizá el fractal más famoso. Se define sobre cada punto del plano de los números complejos (aunque por comodidad,
 podemos definirlo solo entre (-2.5, 1.0) en la dimensión real y (-1, 1) en la dimensión imaginaria.
@@ -69,7 +69,7 @@ de Mandelbrot. Se suele considerar que un punto \(z\) está dentro si \(\mid z \
 será la imagen generada del fractal.
 
 \subsection{Conjunto de Julia}
-\label{sec:org249db56}
+\label{sec:orgca8ea4f}
 
 Íntimamente relacionado con el de Mandelbrot. La fórmula de recursión es idéntica, simplemente cambia que
 cada punto del plano empieza siendo \(z_{0}\) y \(c\) es una constante. Los valores de \(c\) más interesantes visualmente
@@ -77,13 +77,13 @@ son puntos cerca del borde del conjunto de Mandelbrot. El valor de escape aquí 
 a \(c\) bajos (donde cada parte sea menor que 1) serán similares a los de Mandelbrot.
 
 \subsection{Alformbra de Sierpinski}
-\label{sec:org25f2ba4}
+\label{sec:org6fb5317}
 
 Se toma una superficie cuadrada, se subdivide en 9 cuadrados y el cuadrado central se elimina. En cada uno de los 8
 cuadrados restantes se realiza la misma operación. Así hasta N iteraciones.
 
 \subsection{Helecho de Barnsley}
-\label{sec:org0d03e20}
+\label{sec:orgde39fb7}
 
 Un fractal que tiene una gran similitud con los helechos. Utiliza números aleatorios para su construcción.
 
@@ -103,7 +103,7 @@ f_4(x,y) &= \begin{bmatrix} -0.15 & 0.28 \\ 0.26 & 0.24 \end{bmatrix} \begin{bma
 La probabilidad de ejecutar \(f_{1}\) es del 1\%, \(f_{2}\) del 85\%, \(f_{3}\) del 7\% y \(f_{4}\) del 7\% restante.
 
 \subsection{Triángulo de Sierpinski}
-\label{sec:orgd486f6f}
+\label{sec:org116618c}
 
 Existen diversas formas de generar este fractal de triángulos dentro de triángulos. Aquí se propone generarlos mediante el método
 probabilístico. En este método se eligen 3 puntos como los vértices del triángulo. Se toma \(v_{n}\) aleatoriamente como un punto dentro de este triángulo.
@@ -114,7 +114,7 @@ Si bien las primeras iteraciones pueden caer fuera del triángulo, eventualmente
 
 
 \section{Paquetes recomendados}
-\label{sec:orgd7e3eea}
+\label{sec:orga9a0789}
 
 Se recomienda el uso de los siguientes paquetes en el código. Los paquetes pueden instalarse de la siguiente forma:
 
@@ -124,7 +124,7 @@ julia> Pkg.add("NombrePaquete")
 \end{verbatim}
 
 \subsection{Images}
-\label{sec:orgaccd85f}
+\label{sec:org11983d6}
 
 Para generar el resultado como una imagen. Images trae una función \texttt{save} que toma un fichero de salida y una matriz de píxeles. Soporta los formatos más comunes como PNG.
 
@@ -136,7 +136,7 @@ save("imagen.png", a)
 \end{verbatim}
 
 \subsection{ColorSchemes}
-\label{sec:org2715f76}
+\label{sec:org09d2142}
 
 Mapas de colores. Para un número 0 y 1, devuelven un color. Útil para ciertos fractales. Los colores son compatibles con Images.
 
@@ -153,12 +153,12 @@ get(colorschemes[:delta], 1.0)
 \end{verbatim}
 
 \section{Exposición}
-\label{sec:org2da225a}
+\label{sec:org2da641d}
 
 Se valorará la exposición del trabajo frente a la clase. Se dará un tiempo de 10 minutos para presentar el trabajo. Se admitirán preguntas al finalizar la exposición.
 
 \section{Entrega}
-\label{sec:org7127b27}
+\label{sec:org7ebe085}
 
 Se entregará el código y un fichero de instrucciones para ejecutarse en el Campus Virtual en el apartado habilitado para tal efecto.
 \end{document}
